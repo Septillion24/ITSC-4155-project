@@ -17,6 +17,7 @@ const config = {
 			$assets: '/src/assets',
 			$lib: 'src/lib'
 		},
+
 		paths: {
 			base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
 		}
