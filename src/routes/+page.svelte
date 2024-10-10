@@ -17,7 +17,7 @@
 	}
 </script>
 
-<div class="background">
+<div class="wrapper">
 	<header><img src="banner.png" alt="banner" /></header>
 	<div class="container">
 		<div class="workouts">
@@ -66,6 +66,66 @@
 </div>
 
 <style lang="scss">
+	.wrapper {
+		margin: 0;
+		padding: 0;
+		background-color: #616161;
+		height: 100%;
+		width: 100%;
+		min-height: 100%;
+		.container {
+			background-color: #616161;
+			color: white;
+			display: flex;
+			flex-wrap: wrap;
+			flex-direction: row;
+			width: max-content;
+			margin: 0 auto;
+			padding: 20px;
+			min-height: 100%;
+			row-gap: 10px;
+			.workouts {
+				margin: 8px;
+				box-sizing: border-box;
+				width: calc(50% - 16px);
+				background-color: #444;
+				border-radius: 10px;
+				padding: 15px;
+			}
+			.muscle-groups {
+				margin: 8px;
+
+				box-sizing: border-box;
+				width: calc(50% - 16px);
+				background-color: #444;
+				border-radius: 10px;
+				padding: 15px;
+			}
+			.meal-plan {
+				margin: 10px;
+
+				box-sizing: border-box;
+				display: none;
+				border-radius: 10px;
+				padding: 15px;
+			}
+			.workout-schedule {
+				margin: 10px;
+				box-sizing: border-box;
+				width: 100%;
+				background-color: #444;
+				padding: 20px;
+				border-radius: 10px;
+				.schedule-day {
+					margin-bottom: 10px;
+					background-color: #666;
+					padding: 10px;
+					border-radius: 5px;
+					text-align: center;
+				}
+			}
+		}
+	}
 	* {
 		margin: 0;
 		padding: 0;
@@ -95,56 +155,10 @@
 	header img {
 		width: 500px;
 	}
-	.background {
-		margin: 0;
-		padding: 0;
-		background-color: #616161;
-		height: 100%;
-		width: 100%;
-		min-height: 100%;
-	}
-	.container {
-		background-color: #616161;
-		color: white;
-		display: flex;
-		flex-wrap: wrap;
-		flex-direction: column;
-		gap: 20px;
-		width: max-content;
-		margin: 0 auto;
-		padding: 20px;
-		min-height: 100%;
-	}
 
 	h4 {
 		border-bottom: 1px solid #616161;
 		padding-bottom: 10px;
 		margin-bottom: 10px;
-	}
-
-	.workouts {
-		flex: 1 1 300px;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	.muscle-groups,
-	.meal-plan,
-	.workout-schedule {
-		background-color: #444;
-		padding: 20px;
-		border-radius: 10px;
-	}
-
-	.workout,
-	.schedule-day {
-		margin-bottom: 10px;
-	}
-
-	.schedule-day {
-		background-color: #666;
-		padding: 10px;
-		border-radius: 5px;
-		text-align: center;
 	}
 </style>
