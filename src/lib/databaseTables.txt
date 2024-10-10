@@ -1,0 +1,31 @@
+create table workouts(
+    workout_id serial,
+    name varchar,
+    exercise_list int[]
+);
+
+create table exercises(
+    exercise_id serial,
+    name varchar,
+    number_of_sets int,
+    number_of_reps int,
+    set_weights int[],
+    workout_id varchar,
+    muscle_group varchar
+);
+
+create table muscle_groups(
+    muscle_group_id serial,
+    name varchar,
+    exercise_ids int[]
+);
+
+create table meals(
+    meal_id serial,
+    name varchar,
+    meal_type varchar,
+    calories int,
+    carbs int,
+    protein int,
+    fat int
+);
