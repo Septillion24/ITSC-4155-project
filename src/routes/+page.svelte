@@ -1,8 +1,8 @@
 <script>
 	let workouts = [
-		{ title: 'Workout 1', content: 'Details for Workout 1' },
-		{ title: 'Workout 2', content: 'Details for Workout 2' },
-		{ title: 'Workout 3', content: 'Details for Workout 3' }
+		{ title: 'pull', numberOfExercises: '0', content: 'Details for Workout 1' },
+		{ title: 'Workout 2', numberOfExercises: '0', content: 'Details for Workout 2' },
+		{ title: 'Workout 3', numberOfExercises: '0', content: 'Details for Workout 3' }
 	];
 	/**
 	 * @type {number | null}
@@ -20,10 +20,10 @@
 <header><img src="banner.png" alt="banner" /></header>
 <div class="container">
 	<div class="workouts">
-		<h4>WORKOUTS</h4>
+		<div class="header">WORKOUTS</div>
 		{#each workouts as workout, index}
 			<div class="workout">
-				<button on:click={() => toggleWorkout(index)}
+				<!-- <button on:click={() => toggleWorkout(index)}
 					>{#if openWorkoutIndex === index}
 						<img src="arrow_down.png" alt="" />
 						{workout.title}
@@ -32,7 +32,20 @@
 						<img src="arrow_right.png" alt="" />
 						{workout.title}
 					{/if}</button
-				>
+				> -->
+				<div class="icon">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#FFFFFF"><path d="M480-360 280-560h400L480-360Z" /></svg
+					>
+				</div>
+				<div class="excercise-name">{workout.title}</div>
+				<div class="excercise-number">
+					<p>{workout.numberOfExercises}</p>
+				</div>
 			</div>
 		{/each}
 	</div>
@@ -81,11 +94,37 @@
 			width: calc(50% - 16px);
 			background-color: #444;
 			border-radius: 10px;
-			padding: 15px;
+
+			.header {
+				padding: 10px;
+				padding-left: 15px;
+				padding-bottom: 5px;
+				width: 100%;
+				border-bottom: 1px solid #616161;
+			}
+			.workout {
+				padding: 5px;
+				width: 100%;
+				border-bottom: 1px solid #616161;
+				display: flex;
+				flex-wrap: wrap;
+				flex-direction: row;
+				align-items: center;
+				.icon {
+					padding: 5px;
+				}
+				.excercise-name {
+					font-size: 10pt;
+					padding: 5px;
+				}
+				.excercise-number {
+					padding: 5px;
+					color: #616161;
+				}
+			}
 		}
 		.muscle-groups {
 			margin: 8px;
-
 			box-sizing: border-box;
 			width: calc(50% - 16px);
 			background-color: #444;
@@ -94,7 +133,6 @@
 		}
 		.meal-plan {
 			margin: 10px;
-
 			box-sizing: border-box;
 			display: none;
 			border-radius: 10px;
@@ -121,7 +159,7 @@
 		margin: 0;
 		padding: 0;
 		box-sizing: border-box;
-		font-family: Arial, sans-serif;
+		font-family: sans-serif;
 	}
 	:global(body) {
 		margin: 0;
@@ -145,11 +183,5 @@
 
 	header img {
 		width: 500px;
-	}
-
-	h4 {
-		border-bottom: 1px solid #616161;
-		padding-bottom: 10px;
-		margin-bottom: 10px;
 	}
 </style>
