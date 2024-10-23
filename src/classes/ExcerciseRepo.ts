@@ -3,7 +3,7 @@ import Exercise from './Exercise';
 
 export default class ExerciseRepo {
 
-    async populateExercises() {
+    async getExercises() {
         type exerciseFromDatabase = {
             exercise_id: number;
             name: string;
@@ -97,7 +97,6 @@ export default class ExerciseRepo {
             INSERT INTO exercises (name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id)
             VALUES (${sql(changes)})
         `;
-        await this.populateExercises();
     }
 
     async updateExercise(
@@ -124,10 +123,5 @@ export default class ExerciseRepo {
         await sql`
             UPDATE exercises SET ${sql(updates)} WHERE exercise_id = ${exerciseId}
         `;
-        await this.populateExercises();
-    }
-
-    getExercises() {
-        return this.exercises;
     }
 }
