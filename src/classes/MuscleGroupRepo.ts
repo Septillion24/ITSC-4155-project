@@ -1,58 +1,67 @@
 import sql from '$lib/DatabaseConnection';
 import MuscleGroup from './MuscleGroup';
+
 export default class MuscleGroupRepo {
-	muscleGroups: MuscleGroup[] = [];
-	initialized: boolean = false;
 
-	async init() {
-		if (this.initialized) {
-			return;
-		} else {
-			await this.populateMuscleGroups();
-			this.initialized = true;
-		}
-	}
+    async getMuscleGroups() {
+        type muscleGroupFromDatabase = {
+            muscle_group_id: number;
+            name: string;
+            exerciseIds: number[];
+        };
+        const muscleGroupsFromDatabase = await sql<muscleGroupFromDatabase[]>`
+            SELECT * FROM muscle_groups
+        `;
+        return muscleGroupsFromDatabase.map(
+            (muscleGroup) =>
+                new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds)
+        );
+    }
 
-	async populateMuscleGroups() {
-		type muscleGroupFromDatabase = {
-			muscle_group_id: number;
-			name: string;
-			exerciseIds: number[];
-		};
-		const muscleGroupsFromDatabase = await sql<
-			muscleGroupFromDatabase[]
-		>`SELECT * FROM muscle_groups`;
-		this.muscleGroups = muscleGroupsFromDatabase.map(
-			(muscleGroup) =>
-				new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds)
-		);
-	}
+    async getMuscleGroupById(muscleGroupId: number) {
+        type muscleGroupFromDatabase = {
+            muscle_group_id: number;
+            name: string;
+            exerciseIds: number[];
+        };
+        const muscleGroupFromDatabase = await sql<muscleGroupFromDatabase[]>`
+            SELECT * FROM muscle_groups WHERE muscle_group_id = ${muscleGroupId}
+        `;
+        if (muscleGroupFromDatabase.length === 0) {
+            return null;
+        }
+        const muscleGroup = muscleGroupFromDatabase[0];
+        return new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds);
+    }
 
-	getMuscleGroupById(muscleGroupId: number) {
-		return this.muscleGroups.find((muscleGroup) => muscleGroup.muscleGroupId === muscleGroupId);
-	}
-	getMuscleGroupByName(name: string) {
-		return this.muscleGroups.find((muscleGroup) => muscleGroup.name === name);
-	}
-	getMuscleGroups() {
-		return this.muscleGroups;
-	}
-	async addMuscleGroup(name: string, exerciseIds: number[]) {
-		await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds})`;
-		await this.populateMuscleGroups();
-	}
-	async updateMuscleGroup(
-		muscleGroupId: number,
-		updates: { name?: string; exerciseIds?: number[] }
-	) {
-		if (!updates.name && !updates.exerciseIds) {
-			return;
-		}
-		await sql`UPDATE muscle_groups SET ${sql(updates)} WHERE muscle_group_id=${muscleGroupId}`;
-		await this.populateMuscleGroups();
-	}
-	async deleteMuscleGroup(muscleGroupId: number) {
-		await sql`DELETE FROM muscle_groups WHERE muscle_group_id=${muscleGroupId}`;
-		await this.populateMuscleGroups();
-	}
+    async getMuscleGroupByName(name: string) {
+        type muscleGroupFromDatabase = {
+            muscle_group_id: number;
+            name: string;
+            exerciseIds: number[];
+        };
+        const muscleGroupFromDatabase = await sql<muscleGroupFromDatabase[]>`
+            SELECT * FROM muscle_groups WHERE name = ${name}
+        `;
+        if (muscleGroupFromDatabase.length === 0) {
+            return null;
+        }
+        const muscleGroup = muscleGroupFromDatabase[0];
+        return new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds);
+    }
+
+    async addMuscleGroup(name: string, exerciseIds: number[]) {
+        await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds})`;
+    }
+
+    async updateMuscleGroup(
+        muscleGroupId: number,
+        updates: { name?: string; exerciseIds?: number[] }
+    ) {
+        if (!updates.name && !updates.exerciseIds) {
+            return;
+        }
+        await sql`UPDATE muscle_groups SET ${sql(updates)} WHERE muscle_group_id=${muscleGroupId}`;
+    }
+
 }
