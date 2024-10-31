@@ -1,4 +1,4 @@
-import sql from '../lib/DatabaseConnection';
+import sql from '$lib/DatabaseConnection';
 import Exercise from './Exercise';
 
 export default class ExerciseRepo {
