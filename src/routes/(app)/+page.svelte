@@ -345,12 +345,14 @@
 		gap: 10px;
 	}
 		.label-input-container {
-			margin-bottom: 15px;
+			display: flex;
+			flex-direction: column;
+			background-color: #444;
+			border-radius: 5px;
+			padding: 10px;
 		}
 			.label-input-container label {
-				font-size: 1rem;
 				margin-bottom: 5px;
-				display: block;
 			}
 				.set-details-container {
 					background-color: #444;
