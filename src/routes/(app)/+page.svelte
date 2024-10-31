@@ -8,31 +8,6 @@
 	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 
-	let workouts: Workout[] = [
-		{ workoutId: 0, name: 'pull', exerciseList: [0, 0, 0] },
-		{ workoutId: 1, name: 'Workout 2', exerciseList: [0] },
-		{ workoutId: 2, name: 'Workout 3', exerciseList: [0] }
-	];
-
-	let exercises: Exercise[] = [
-		{
-			exerciseId: 0,
-			name: 'jawn',
-			numberOfSets: 4,
-			numberOfReps: 10,
-			setWeights: [1],
-			workoutID: 0,
-			muscleGroupID: 0
-		}
-	];
-
-	let muscleGroups: MuscleGroup[] = [
-		{ muscleGroupId: 0, name: 'Chest' },
-		{ muscleGroupId: 1, name: 'Back' },
-		{ muscleGroupId: 2, name: 'Shoulders' },
-		{ muscleGroupId: 3, name: 'Quads' }
-	];
-
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
 			if (exercise.exerciseId === id) {

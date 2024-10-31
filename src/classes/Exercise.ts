@@ -4,8 +4,8 @@ export default class Exercise {
 	numberOfSets: number;
 	numberOfReps: number;
 	setWeights: number[];
-	workoutID: number;
-	muscleGroupID: number;
+	workoutID: number | null;
+	muscleGroupID: number | null;
 
 	constructor(
 		exerciseId: number,
@@ -13,8 +13,8 @@ export default class Exercise {
 		numberOfSets: number,
 		numberOfReps: number,
 		setWeights: number[] = [],
-		workoutID: number,
-		muscleGroupID: number
+		workoutID: number | null = null,
+		muscleGroupID: number | null = null
 	) {
 		this.exerciseId = exerciseId;
 		this.name = name;
@@ -23,5 +23,17 @@ export default class Exercise {
 		this.setWeights = setWeights; // Array of weights for each set
 		this.workoutID = workoutID; // String representing workout group
 		this.muscleGroupID = muscleGroupID; // String representing muscle group
+	}
+
+	toJson() {
+		return {
+			exerciseId: this.exerciseId,
+			name: this.name,
+			numberOfSets: this.numberOfSets,
+			numberOfReps: this.numberOfReps,
+			setWeights: this.setWeights,
+			workoutID: this.workoutID,
+			muscleGroupID: this.muscleGroupID
+		};
 	}
 }
