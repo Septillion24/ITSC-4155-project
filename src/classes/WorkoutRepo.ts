@@ -1,4 +1,4 @@
-import sql from '$lib/databaseConnection';
+import sql from '$lib/DatabaseConnection';
 import Workout from './Workout';
 export default class WorkoutRepo {
 	static async getWorkouts() {
