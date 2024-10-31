@@ -2,7 +2,7 @@ import sql from '$lib/databaseConnection';
 import MuscleGroup from './MuscleGroup';
 
 export default class MuscleGroupRepo {
-	async getMuscleGroups() {
+	static async getMuscleGroups() {
 		type muscleGroupFromDatabase = {
 			muscle_group_id: number;
 			name: string;
@@ -17,7 +17,7 @@ export default class MuscleGroupRepo {
 		);
 	}
 
-	async getMuscleGroupById(muscleGroupId: number) {
+	static async getMuscleGroupById(muscleGroupId: number) {
 		type muscleGroupFromDatabase = {
 			muscle_group_id: number;
 			name: string;
@@ -33,7 +33,7 @@ export default class MuscleGroupRepo {
 		return new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds);
 	}
 
-	async getMuscleGroupByName(name: string) {
+	static async getMuscleGroupByName(name: string) {
 		type muscleGroupFromDatabase = {
 			muscle_group_id: number;
 			name: string;
@@ -49,13 +49,13 @@ export default class MuscleGroupRepo {
 		return new MuscleGroup(muscleGroup.muscle_group_id, muscleGroup.name, muscleGroup.exerciseIds);
 	}
 
-	async addMuscleGroup(name: string, exerciseIds: number[]) {
+	static async addMuscleGroup(name: string, exerciseIds: number[]) {
 		const row =
 			await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds}) returning muscle_group_id`;
 		return new MuscleGroup(row[0].muscle_group_id, name, exerciseIds);
 	}
 
-	async updateMuscleGroup(
+	static async updateMuscleGroup(
 		muscleGroupId: number,
 		updates: { name?: string; exerciseIds?: number[] }
 	) {

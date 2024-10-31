@@ -2,7 +2,7 @@ import sql from '$lib/databaseConnection';
 import Exercise from './Exercise';
 
 export default class ExerciseRepo {
-	async getExercises() {
+	static async getExercises() {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -27,7 +27,7 @@ export default class ExerciseRepo {
 		);
 	}
 
-	async getExerciseById(exerciseId: number) {
+	static async getExerciseById(exerciseId: number) {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -55,7 +55,7 @@ export default class ExerciseRepo {
 		);
 	}
 
-	async getExerciseByName(name: string) {
+	static async getExerciseByName(name: string) {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -83,7 +83,7 @@ export default class ExerciseRepo {
 		);
 	}
 
-	async addExercise(changes: {
+	static async addExercise(changes: {
 		name: string;
 		number_of_sets: number;
 		number_of_reps: number;
@@ -106,7 +106,7 @@ export default class ExerciseRepo {
 		);
 	}
 
-	async updateExercise(
+	static async updateExercise(
 		exerciseId: number,
 		updates: {
 			name?: string;
