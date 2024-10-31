@@ -145,7 +145,7 @@
 			<label for="reps">Reps</label>
 			<input type="number" id="reps" name="reps" min="1" placeholder="Enter Reps" />
 		</div>
-		<button class="add-set">+ Add Set</button>
+		<button class="add-set-button">+ Add Set</button>
 	</div>
 </Modal>
 
@@ -338,29 +338,51 @@
 		}
 	}
 	.modalContent {
-		padding: 10px;
-		flex: 1;
+		padding: 20px;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
-	}
+		gap: 15px;
+		width: 500px;
 		.label-input-container {
 			display: flex;
 			flex-direction: column;
 			background-color: #444;
 			border-radius: 5px;
-			padding: 10px;
-		}
-			.label-input-container label {
+			padding: 12px;
+			label {
+				color: #ddd;
+				font-size: 1rem;
 				margin-bottom: 5px;
 			}
-				.set-details-container {
-					background-color: #444;
-					border-radius: 5px;
-					padding: 10px;
-					display: flex;
-					gap: 10px;
-				}
+			input,
+			select {
+				padding: 8px;
+				border-radius: 5px;
+				font-size: 0.9rem;
+			}
+		}
+		.set-details-container {
+			background-color: #444;
+			border-radius: 5px;
+			padding: 10px;
+			display: flex;
+			gap: 10px;
+			input {
+				width: 100%;
+				border-radius: 5px;
+			}
+		}
+		.add-set-button {
+			padding: 10px;
+			background-color: #444;
+			color: #fff;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 1rem;
+			text-align: center;
+		}
+	}
 	@keyframes wiggle {
 		0% {
 			transform: rotate(0);
