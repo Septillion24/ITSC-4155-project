@@ -1,4 +1,4 @@
-import sql from '$lib/DatabaseConnection';
+import sql from '$lib/databaseConnection';
 import MuscleGroup from './MuscleGroup';
 
 export default class MuscleGroupRepo {
@@ -50,7 +50,9 @@ export default class MuscleGroupRepo {
 	}
 
 	async addMuscleGroup(name: string, exerciseIds: number[]) {
-		await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds})`;
+		const row =
+			await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds}) returning muscle_group_id`;
+		return new MuscleGroup(row[0].muscle_group_id, name, exerciseIds);
 	}
 
 	async updateMuscleGroup(

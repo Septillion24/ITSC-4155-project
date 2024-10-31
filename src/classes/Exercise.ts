@@ -4,8 +4,8 @@ export default class Exercise {
 	numberOfSets: number;
 	numberOfReps: number;
 	setWeights: number[];
-	workoutID: number;
-	muscleGroupID: number;
+	workoutID: number | null;
+	muscleGroupID: number | null;
 
 	constructor(
 		exerciseId: number,
@@ -13,8 +13,8 @@ export default class Exercise {
 		numberOfSets: number,
 		numberOfReps: number,
 		setWeights: number[] = [],
-		workoutID: number,
-		muscleGroupID: number
+		workoutID: number | null = null,
+		muscleGroupID: number | null = null
 	) {
 		this.exerciseId = exerciseId;
 		this.name = name;

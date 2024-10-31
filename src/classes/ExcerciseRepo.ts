@@ -1,4 +1,4 @@
-import sql from '$lib/DatabaseConnection';
+import sql from '$lib/databaseConnection';
 import Exercise from './Exercise';
 
 export default class ExerciseRepo {
@@ -91,10 +91,19 @@ export default class ExerciseRepo {
 		workout_id?: number;
 		muscle_group_id?: number;
 	}) {
-		await sql`
+		const row = await sql`
             INSERT INTO exercises (name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id)
-            VALUES (${sql(changes)})
+            VALUES (${sql(changes)}) returning exercise_id
         `;
+		return new Exercise(
+			row[0].exercise_id,
+			changes.name,
+			changes.number_of_sets,
+			changes.number_of_reps,
+			changes.set_weights,
+			changes.workout_id ?? null,
+			changes.muscle_group_id ?? null
+		);
 	}
 
 	async updateExercise(
