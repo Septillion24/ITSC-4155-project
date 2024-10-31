@@ -1,52 +1,77 @@
-<script>
-	let workouts = [
-		{ title: 'pull', numberOfExercises: '0', content: 'Details for Workout 1' },
-		{ title: 'Workout 2', numberOfExercises: '0', content: 'Details for Workout 2' },
-		{ title: 'Workout 3', numberOfExercises: '0', content: 'Details for Workout 3' }
-	];
-	/**
-	 * @type {number | null}
-	 */
-	let openWorkoutIndex = null;
+<script lang="ts">
+	import Accordion from '$lib/Accordion.svelte';
+	import Modal from '$lib/Modal.svelte';
+	import Exercise from '../classes/Exercise';
+	import type Workout from '../classes/Workout';
 
-	/**
-	 * @param {number | null} index
-	 */
-	function toggleWorkout(index) {
-		openWorkoutIndex = openWorkoutIndex === index ? null : index;
+	let showAddNewWorkoutsModal = false;
+	let currentlyEditingWorkout: number | undefined = undefined;
+
+	let workouts: Workout[] = [
+		{ workoutId: 0, name: 'pull', exerciseList: [0, 0, 0] },
+		{ workoutId: 1, name: 'Workout 2', exerciseList: [0] },
+		{ workoutId: 2, name: 'Workout 3', exerciseList: [0] }
+	];
+
+	let exercises: Exercise[] = [
+		{
+			exerciseId: 0,
+			name: 'jawn',
+			numberOfSets: 4,
+			numberOfReps: 10,
+			setWeights: [1],
+			workoutID: 0,
+			muscleGroupID: 0
+		}
+	];
+
+	function getExerciseById(id: number) {
+		for (const exercise of exercises) {
+			if (exercise.exerciseId === id) {
+				return exercise;
+			}
+		}
+		return null;
 	}
 </script>
 
-<header><img src="banner.png" alt="banner" /></header>
 <div class="container">
 	<div class="workouts">
 		<div class="header">WORKOUTS</div>
-		{#each workouts as workout, index}
-			<div class="workout">
-				<!-- <button on:click={() => toggleWorkout(index)}
-					>{#if openWorkoutIndex === index}
-						<img src="arrow_down.png" alt="" />
-						{workout.title}
-						{workout.content}
-					{:else}
-						<img src="arrow_right.png" alt="" />
-						{workout.title}
-					{/if}</button
-				> -->
-				<div class="icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						height="24px"
-						viewBox="0 -960 960 960"
-						width="24px"
-						fill="#FFFFFF"><path d="M480-360 280-560h400L480-360Z" /></svg
+		{#each workouts as workout}
+			<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
+				<div class="workoutContent">
+					{#each workout.exerciseList as excerciseID}
+						{@const exercise = getExerciseById(excerciseID)}
+						{#if exercise !== null}
+							<div class="excercise">
+								<div class="name">{exercise.name}</div>
+								<div class="muscleGroup">{exercise.muscleGroupID}</div>
+								<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+							</div>
+						{/if}
+					{/each}
+					<button
+						class="addExcercise"
+						on:click={() => {
+							currentlyEditingWorkout = workout.workoutId;
+							showAddNewWorkoutsModal = true;
+						}}
 					>
+						<div class="addText">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								height="24px"
+								viewBox="0 -960 960 960"
+								width="24px"
+								fill="#5f6368"
+								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+							>
+							<div class="text">Add</div>
+						</div>
+					</button>
 				</div>
-				<div class="excercise-name">{workout.title}</div>
-				<div class="excercise-number">
-					<p>{workout.numberOfExercises}</p>
-				</div>
-			</div>
+			</Accordion>
 		{/each}
 	</div>
 
@@ -61,13 +86,6 @@
 		<p>...</p>
 	</div>
 
-	<div class="meal-plan">
-		<h4>MEAL PLAN</h4>
-		<p>Lunch 1: Beef Tacos</p>
-		<p>Lunch 2: ...</p>
-		<p>Dinner 1: ...</p>
-	</div>
-
 	<div class="workout-schedule">
 		<h4>WORKOUT SCHEDULE</h4>
 		<div class="schedule-day">Sun 08</div>
@@ -76,18 +94,31 @@
 	</div>
 </div>
 
+<Modal bind:showModal={showAddNewWorkoutsModal}>
+	<div class="modalContent">beans</div>
+</Modal>
+
 <style lang="scss">
+	:global(body) {
+		margin: 0;
+		padding: 0;
+	}
+
 	.container {
+		font-family: sans-serif;
 		background-color: #616161;
-		color: white;
+		color: rgb(228, 228, 228);
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: row;
-		width: max-content;
 		margin: 0 auto;
 		padding: 20px;
 		min-height: 100%;
 		row-gap: 10px;
+		width: 100%;
+		padding-left: 25%;
+		padding-right: 25%;
+		box-sizing: border-box;
 		.workouts {
 			margin: 8px;
 			box-sizing: border-box;
@@ -102,24 +133,73 @@
 				width: 100%;
 				border-bottom: 1px solid #616161;
 			}
-			.workout {
-				padding: 5px;
+
+			.workoutContent {
 				width: 100%;
-				border-bottom: 1px solid #616161;
 				display: flex;
+				gap: 10px;
 				flex-wrap: wrap;
-				flex-direction: row;
-				align-items: center;
-				.icon {
-					padding: 5px;
+				padding: 20px;
+				box-sizing: border-box;
+				overflow: hidden;
+				.excercise,
+				.addExcercise {
+					padding-left: 20px;
+					padding-right: 20px;
+					padding-top: 7px;
+					padding-bottom: 7px;
+					width: calc(50% - 10px);
+					box-sizing: border-box;
+					border-radius: 10px;
+					display: flex;
+					flex-direction: column;
+					justify-content: space-between;
+					gap: 10px;
+
+					.name {
+						font-size: 12pt;
+					}
+					.muscleGroup {
+						font-size: 10pt;
+					}
+					.sets {
+						font-size: 10pt;
+					}
 				}
-				.excercise-name {
-					font-size: 10pt;
-					padding: 5px;
+				.excercise {
+					background-color: #666;
 				}
-				.excercise-number {
-					padding: 5px;
-					color: #616161;
+				.addExcercise {
+					background-color: transparent;
+					border: 2px dashed #666;
+					color: #666;
+					justify-content: center;
+					align-items: center;
+					font-size: 1.05em;
+					cursor: pointer;
+					.addText {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						font-size: 1.2em;
+						svg {
+							fill: #666;
+							height: 1.2em;
+							width: 1.2em;
+						}
+					}
+					&:hover {
+						transition: 0.2s;
+						border: 2px dashed #999;
+						color: #999;
+						svg {
+							transition: 0.2s;
+							fill: #999;
+							animation-name: wiggle;
+							animation-duration: 0.5s;
+							animation-iteration-count: 1;
+						}
+					}
 				}
 			}
 		}
@@ -131,13 +211,7 @@
 			border-radius: 10px;
 			padding: 15px;
 		}
-		.meal-plan {
-			margin: 10px;
-			box-sizing: border-box;
-			display: none;
-			border-radius: 10px;
-			padding: 15px;
-		}
+
 		.workout-schedule {
 			margin: 10px;
 			box-sizing: border-box;
@@ -155,33 +229,21 @@
 		}
 	}
 
-	* {
-		margin: 0;
-		padding: 0;
-		box-sizing: border-box;
-		font-family: sans-serif;
-	}
-	:global(body) {
-		margin: 0;
-		padding: 0;
-	}
-
-	body {
-		margin: 0;
-		padding: 0;
-		background-color: #2f2f2f;
-		color: #fff;
-	}
-
-	header {
-		text-align: center;
-		background-color: black;
-		margin: 0;
-		padding: 0;
-		width: 100%;
-	}
-
-	header img {
-		width: 500px;
+	@keyframes wiggle {
+		0% {
+			transform: rotate(0);
+		}
+		25% {
+			transform: rotate(-30deg);
+		}
+		50% {
+			transform: rotate(30deg);
+		}
+		75% {
+			transform: rotate(0);
+		}
+		100% {
+			transform: rotate(0);
+		}
 	}
 </style>

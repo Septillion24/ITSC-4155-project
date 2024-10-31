@@ -1,4 +1,9 @@
-<div class="wrapper"><main><slot /></main></div>
+<div class="wrapper">
+	<main>
+		<header><img src="banner.png" alt="banner" /></header>
+		<slot />
+	</main>
+</div>
 
 <style lang="scss">
 	.wrapper {
@@ -11,6 +16,18 @@
 			flex: 1;
 			display: flex;
 			flex-direction: column;
+		}
+
+		header {
+			text-align: center;
+			background-color: black;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+		}
+
+		header img {
+			width: 500px;
 		}
 	}
 </style>
