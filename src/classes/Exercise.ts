@@ -24,4 +24,16 @@ export default class Exercise {
 		this.workoutID = workoutID; // String representing workout group
 		this.muscleGroupID = muscleGroupID; // String representing muscle group
 	}
+
+	toJson() {
+		return {
+			exerciseId: this.exerciseId,
+			name: this.name,
+			numberOfSets: this.numberOfSets,
+			numberOfReps: this.numberOfReps,
+			setWeights: this.setWeights,
+			workoutID: this.workoutID,
+			muscleGroupID: this.muscleGroupID
+		};
+	}
 }

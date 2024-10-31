@@ -83,26 +83,30 @@ export default class ExerciseRepo {
 		);
 	}
 
-	static async addExercise(changes: {
+	static async addExercise(excerciseInfo: {
 		name: string;
-		number_of_sets: number;
-		number_of_reps: number;
-		set_weights: number[];
+		number_of_sets?: number;
+		number_of_reps?: number;
+		set_weights?: number[];
 		workout_id?: number;
 		muscle_group_id?: number;
 	}) {
 		const row = await sql`
-            INSERT INTO exercises (name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id)
-            VALUES (${sql(changes)}) returning exercise_id
+            INSERT INTO exercises (
+                name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id
+            ) VALUES (
+                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${excerciseInfo.workout_id ?? null}, ${excerciseInfo.muscle_group_id ?? null}
+            ) RETURNING exercise_id
         `;
+
 		return new Exercise(
 			row[0].exercise_id,
-			changes.name,
-			changes.number_of_sets,
-			changes.number_of_reps,
-			changes.set_weights,
-			changes.workout_id ?? null,
-			changes.muscle_group_id ?? null
+			excerciseInfo.name,
+			excerciseInfo.number_of_sets ?? 0,
+			excerciseInfo.number_of_reps ?? 0,
+			excerciseInfo.set_weights ?? [0],
+			excerciseInfo.workout_id ?? null,
+			excerciseInfo.muscle_group_id ?? null
 		);
 	}
 
@@ -130,5 +134,13 @@ export default class ExerciseRepo {
 		await sql`
             UPDATE exercises SET ${sql(updates)} WHERE exercise_id = ${exerciseId}
         `;
+		const exercise = await this.getExerciseById(exerciseId);
+		return exercise;
+	}
+
+	static async deleteExercise(exerciseId: number) {
+		await sql`
+			DELETE FROM exercises WHERE exercise_id = ${exerciseId}
+		`;
 	}
 }

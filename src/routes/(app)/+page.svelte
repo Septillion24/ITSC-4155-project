@@ -344,23 +344,23 @@
 		flex-direction: column;
 		gap: 10px;
 	}
-		.label-input-container {
-			display: flex;
-			flex-direction: column;
-			background-color: #444;
-			border-radius: 5px;
-			padding: 10px;
-		}
-			.label-input-container label {
-				margin-bottom: 5px;
-			}
-				.set-details-container {
-					background-color: #444;
-					border-radius: 5px;
-					padding: 10px;
-					display: flex;
-					gap: 10px;
-				}
+	.label-input-container {
+		display: flex;
+		flex-direction: column;
+		background-color: #444;
+		border-radius: 5px;
+		padding: 10px;
+	}
+	.label-input-container label {
+		margin-bottom: 5px;
+	}
+	.set-details-container {
+		background-color: #444;
+		border-radius: 5px;
+		padding: 10px;
+		display: flex;
+		gap: 10px;
+	}
 	@keyframes wiggle {
 		0% {
 			transform: rotate(0);
