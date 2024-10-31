@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Accordion from '$lib/Accordion.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import Exercise from '../classes/Exercise';
-	import type MuscleGroup from '../classes/MuscleGroup';
-	import type Workout from '../classes/Workout';
+	import Exercise from '../../classes/Exercise';
+	import type MuscleGroup from '../../classes/MuscleGroup';
+	import type Workout from '../../classes/Workout';
 
 	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
@@ -116,7 +116,37 @@
 </div>
 
 <Modal bind:showModal={showAddNewWorkoutsModal}>
-	<div class="modalContent">beans</div>
+	<div class="modalContent">
+		<div class="label-input-container">
+			<label for="exercise-name">Exercise Name</label>
+			<input
+				type="text"
+				id="exercise-name"
+				name="exercise-name"
+				placeholder="Enter Exercise Name"
+			/>
+		</div>
+		<div class="label-input-container">
+			<label for="muscle-group">MuscleGroup</label>
+			<select id="muscle-group">
+				<option>Select</option>
+				<option>Chest</option>
+				<option>Back</option>
+				<option>Biceps</option>
+			</select>
+		</div>
+		<div class="set-details-container">
+			<label for="set">Set</label>
+			<input type="number" id="set" name="set" min="1" step="1" placeholder="Enter Set #" />
+
+			<label for="lbs">Lbs</label>
+			<input type="number" id="lbs" name="lbs" min="0" placeholder="Enter Lbs" />
+
+			<label for="reps">Reps</label>
+			<input type="number" id="reps" name="reps" min="1" placeholder="Enter Reps" />
+		</div>
+		<button class="add-set">+ Add Set</button>
+	</div>
 </Modal>
 
 <style lang="scss">
@@ -307,7 +337,28 @@
 			}
 		}
 	}
-
+	.modalContent {
+		padding: 10px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+		.label-input-container {
+			margin-bottom: 15px;
+		}
+			.label-input-container label {
+				font-size: 1rem;
+				margin-bottom: 5px;
+				display: block;
+			}
+				.set-details-container {
+					background-color: #444;
+					border-radius: 5px;
+					padding: 10px;
+					display: flex;
+					gap: 10px;
+				}
 	@keyframes wiggle {
 		0% {
 			transform: rotate(0);

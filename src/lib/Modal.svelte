@@ -57,6 +57,7 @@
 		font-size: 20pt;
 		cursor: pointer;
 	}
+	
 	dialog {
 		// overflow: visible;
 		max-width: 70vw;
@@ -64,7 +65,7 @@
 		border-radius: 0.4em;
 		border: none;
 		padding: 20px;
-		background-color: #444;
+		background-color: rgb(43, 42, 42);
 		color: rgb(228, 228, 228);
 		font-family: sans-serif;
 		position: fixed;
