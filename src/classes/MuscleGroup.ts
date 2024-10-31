@@ -1,10 +1,13 @@
 export default class MuscleGroup {
 	muscleGroupId: number;
 	name: string;
-	exerciseIds: number[];
+	exerciseIDs: number[];
 	constructor(muscleGroupId: number, name: string, exerciseIds: number[]) {
 		this.muscleGroupId = muscleGroupId;
 		this.name = name;
-		this.exerciseIds = exerciseIds;
+		this.exerciseIDs = exerciseIds;
+	}
+	public setExerciseList(exerciseIDs: number[] = []) {
+		this.exerciseIDs = exerciseIDs;
 	}
 }
