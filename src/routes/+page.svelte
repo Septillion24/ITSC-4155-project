@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Accordion from '$lib/Accordion.svelte';
+	import Modal from '$lib/Modal.svelte';
 	import Exercise from '../classes/Exercise';
 	import type Workout from '../classes/Workout';
+
+	let showAddNewWorkoutsModal = false;
+	let currentlyEditingWorkout: number | undefined = undefined;
 
 	let workouts: Workout[] = [
 		{ workoutId: 0, name: 'pull', exerciseList: [0, 0, 0] },
@@ -20,12 +24,6 @@
 			muscleGroupID: 0
 		}
 	];
-
-	let openWorkoutIndex: number | null = null;
-
-	function toggleWorkout(index: number) {
-		openWorkoutIndex = openWorkoutIndex === index ? null : index;
-	}
 
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
@@ -53,7 +51,13 @@
 							</div>
 						{/if}
 					{/each}
-					<button class="addExcercise">
+					<button
+						class="addExcercise"
+						on:click={() => {
+							currentlyEditingWorkout = workout.workoutId;
+							showAddNewWorkoutsModal = true;
+						}}
+					>
 						<div class="addText">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -90,6 +94,10 @@
 	</div>
 </div>
 
+<Modal bind:showModal={showAddNewWorkoutsModal}>
+	<div class="modalContent">beans</div>
+</Modal>
+
 <style lang="scss">
 	:global(body) {
 		margin: 0;
@@ -99,7 +107,7 @@
 	.container {
 		font-family: sans-serif;
 		background-color: #616161;
-		color: white;
+		color: rgb(228, 228, 228);
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: row;
