@@ -2,6 +2,7 @@
 	import Accordion from '$lib/Accordion.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import Exercise from '../classes/Exercise';
+	import type MuscleGroup from '../classes/MuscleGroup';
 	import type Workout from '../classes/Workout';
 
 	let showAddNewWorkoutsModal = false;
@@ -23,6 +24,13 @@
 			workoutID: 0,
 			muscleGroupID: 0
 		}
+	];
+
+	let muscleGroups: MuscleGroup[] = [
+		{ muscleGroupId: 0, name: 'Chest' },
+		{ muscleGroupId: 1, name: 'Back' },
+		{ muscleGroupId: 2, name: 'Shoulders' },
+		{ muscleGroupId: 3, name: 'Quads' }
 	];
 
 	function getExerciseById(id: number) {
@@ -67,7 +75,7 @@
 								fill="#5f6368"
 								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
 							>
-							<div class="text">Add</div>
+							<div class="text">New</div>
 						</div>
 					</button>
 				</div>
@@ -75,15 +83,28 @@
 		{/each}
 	</div>
 
-	<div class="muscle-groups">
-		<h4>MUSCLE GROUPS</h4>
-		<p>Back</p>
-		<p>Shoulders</p>
-		<p>Chest</p>
-		<p>Quads</p>
-		<p>Triceps</p>
-		<p>Core</p>
-		<p>...</p>
+	<div class="muscleGroups">
+		<div class="header">MUSCLE GROUPS</div>
+		<div class="muscleGroupsContainer">
+			{#each muscleGroups as muscleGroup}
+				<div class="muscleGroup">
+					{muscleGroup.name}
+				</div>
+			{/each}
+			<div class="addMuscleGroup">
+				<div class="addText">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#5f6368"
+						><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+					>
+					<div class="text">New</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="workout-schedule">
@@ -203,13 +224,71 @@
 				}
 			}
 		}
-		.muscle-groups {
+		.muscleGroups {
 			margin: 8px;
 			box-sizing: border-box;
 			width: calc(50% - 16px);
 			background-color: #444;
 			border-radius: 10px;
-			padding: 15px;
+			.header {
+				padding: 10px;
+				padding-left: 15px;
+				padding-bottom: 5px;
+				width: 100%;
+				border-bottom: 1px solid #616161;
+			}
+			.muscleGroupsContainer {
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				// justify-content: center;
+				gap: 20px;
+				padding: 15px;
+				box-sizing: border-box;
+				.muscleGroup,
+				.addMuscleGroup {
+					width: calc(50% - 10px);
+					background-color: #666;
+					border-radius: 13px;
+					padding: 8px;
+					box-sizing: border-box;
+					text-align: center;
+				}
+				.addMuscleGroup {
+					background-color: transparent;
+					border: 2px dashed #666;
+					color: #666;
+					padding: 3px;
+					justify-content: center;
+					align-items: center;
+					// font-size: 1.05em;
+					cursor: pointer;
+					.addText {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						font-size: 1.2em;
+						svg {
+							fill: #666;
+							height: 1.2em;
+							width: 1.2em;
+						}
+					}
+					&:hover {
+						transition: 0.2s;
+						border: 2px dashed #999;
+						color: #999;
+						svg {
+							transition: 0.2s;
+							fill: #999;
+							animation-name: wiggle;
+							animation-duration: 0.5s;
+							animation-iteration-count: 1;
+						}
+					}
+				}
+			}
 		}
 
 		.workout-schedule {

@@ -61,7 +61,7 @@
 		// overflow: visible;
 		max-width: 70vw;
 		max-height: 80vh;
-		border-radius: 0.2em;
+		border-radius: 0.4em;
 		border: none;
 		padding: 20px;
 		background-color: #444;
