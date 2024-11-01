@@ -1,12 +1,33 @@
 <script lang="ts">
 	import Accordion from '$lib/Accordion.svelte';
 	import Modal from '$lib/Modal.svelte';
+	import { onMount } from 'svelte';
 	import Exercise from '../../classes/Exercise';
 	import type MuscleGroup from '../../classes/MuscleGroup';
 	import type Workout from '../../classes/Workout';
 
 	let showAddNewWorkoutsModal = false;
+	let showAddNewMuscleGroupModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
+
+	let workouts: Workout[] = [];
+
+	let exercises: Exercise[] = [];
+
+	let muscleGroups: MuscleGroup[] = [];
+
+	let exerciseName: String;
+	let muscleGroup: String;
+	let set: Number;
+	let lbs: Number;
+	let reps: Number;
+
+	onMount(async () => {
+		exercises = await (await fetch('/api/get/exercises')).json();
+		//workout = await (await fetch('/api/get/workouts')).json();
+		//muscleGroups = await (await fetch('/api/get/musclegroups')).json();
+		//set = bind:value={set}
+	});
 
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
@@ -16,11 +37,32 @@
 		}
 		return null;
 	}
+
+	$: console.log(exerciseName, muscleGroup);
 </script>
 
 <div class="container">
 	<div class="workouts">
-		<div class="header">WORKOUTS</div>
+		<div class="header-container">
+			<div class="header">WORKOUTS</div>
+			<button
+				class="add-musclegroup-button"
+				on:click={() => {
+					showAddNewMuscleGroupModal = true;
+				}}
+			>
+				<div class="addText">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#5f6368"
+						><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+					>
+				</div>
+			</button>
+		</div>
 		{#each workouts as workout}
 			<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
 				<div class="workoutContent">
@@ -90,11 +132,28 @@
 	</div>
 </div>
 
+<Modal bind:showModal={showAddNewMuscleGroupModal}>
+	<div class="modalContent">
+		<div class="label-input-container">
+			<label for="muscle-group">MuscleGroup</label>
+			<input
+				bind:value={muscleGroup}
+				type="text"
+				id="muscle-group"
+				name="muscle-group"
+				placeholder="Enter Muscle Group"
+			/>
+			<button class="submit-button">Submit</button>
+		</div>
+	</div>
+</Modal>
+
 <Modal bind:showModal={showAddNewWorkoutsModal}>
 	<div class="modalContent">
 		<div class="label-input-container">
 			<label for="exercise-name">Exercise Name</label>
 			<input
+				bind:value={exerciseName}
 				type="text"
 				id="exercise-name"
 				name="exercise-name"
@@ -103,7 +162,7 @@
 		</div>
 		<div class="label-input-container">
 			<label for="muscle-group">MuscleGroup</label>
-			<select id="muscle-group">
+			<select bind:value={muscleGroup} id="muscle-group">
 				<option>Select</option>
 				<option>Chest</option>
 				<option>Back</option>
@@ -112,15 +171,30 @@
 		</div>
 		<div class="set-details-container">
 			<label for="set">Set</label>
-			<input type="number" id="set" name="set" min="1" step="1" placeholder="Enter Set #" />
-
+			<input
+				bind:value={set}
+				type="number"
+				id="set"
+				name="set"
+				min="1"
+				step="1"
+				placeholder="Enter Set #"
+			/>
 			<label for="lbs">Lbs</label>
-			<input type="number" id="lbs" name="lbs" min="0" placeholder="Enter Lbs" />
+			<input bind:value={lbs} type="number" id="lbs" name="lbs" min="0" placeholder="Enter Lbs" />
 
 			<label for="reps">Reps</label>
-			<input type="number" id="reps" name="reps" min="1" placeholder="Enter Reps" />
+			<input
+				bind:value={reps}
+				type="number"
+				id="reps"
+				name="reps"
+				min="1"
+				placeholder="Enter Reps"
+			/>
 		</div>
 		<button class="add-set-button">+ Add Set</button>
+		<button class="add-set-button">Submit</button>
 	</div>
 </Modal>
 
@@ -151,15 +225,30 @@
 			width: calc(50% - 16px);
 			background-color: #444;
 			border-radius: 10px;
-
-			.header {
+			.header-container {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 4px 15px 0px;
+				border-bottom: 1px solid #616161;
+			}
+			/*.header {
 				padding: 10px;
 				padding-left: 15px;
 				padding-bottom: 5px;
 				width: 100%;
 				border-bottom: 1px solid #616161;
+			}*/
+			.add-musclegroup-button {
+				background-color: transparent;
+				color: #888;
+				border: none;
+				font-size: 1.5em;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 			}
-
 			.workoutContent {
 				width: 100%;
 				display: flex;
@@ -356,6 +445,16 @@
 			cursor: pointer;
 			font-size: 1rem;
 			text-align: center;
+		}
+		.submit-button {
+			margin-top: 10px;
+			padding: 10px;
+			border: none;
+			border-radius: 5px;
+			background-color: #5f6368;
+			color: #fff;
+			cursor: pointer;
+			font-size: 1rem;
 		}
 	}
 	@keyframes wiggle {
