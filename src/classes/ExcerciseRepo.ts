@@ -1,19 +1,8 @@
 import sql from '$lib/DatabaseConnection';
 import Exercise from './Exercise';
+import WorkoutRepo from './WorkoutRepo';
 export default class ExerciseRepo {
-	exercises: Exercise[] = [];
-	initialized: boolean = false;
-
-	async init() {
-		if (this.initialized) {
-			return;
-		} else {
-			await this.populateExercises();
-			this.initialized = true;
-		}
-	}
-
-	async populateExercises() {
+	static async getExercises() {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -24,7 +13,7 @@ export default class ExerciseRepo {
 			muscle_group_id: number;
 		};
 		const exercisesFromDatabase = await sql<exerciseFromDatabase[]>`SELECT * FROM exercises`;
-		this.exercises = exercisesFromDatabase.map(
+		return exercisesFromDatabase.map(
 			(exercise) =>
 				new Exercise(
 					exercise.exercise_id,
@@ -37,41 +26,126 @@ export default class ExerciseRepo {
 				)
 		);
 	}
-	getAllExcercises() {
-		return [[
-			new Exercise(1, 'Bench Press', 3, 10, [100, 105, 110], 1, 1),
-			new Exercise(2, 'Squat', 4, 8, [120, 130, 135, 140], 2, 2),
-			new Exercise(3, 'Deadlift', 3, 5, [150, 160, 170], 3, 2),
-			new Exercise(4, 'Shoulder Press', 3, 12, [50, 55, 60], 4, 3),
-			new Exercise(5, 'Pull-up', 3, 10, [], 5, 4), // No weights for bodyweight exercise
-			new Exercise(6, 'Bicep Curl', 3, 15, [25, 30, 35], 6, 5),
-		  ]]
+
+	static async getExerciseById(exerciseId: number) {
+		type exerciseFromDatabase = {
+			exercise_id: number;
+			name: string;
+			number_of_sets: number;
+			number_of_reps: number;
+			set_weights: number[];
+			workout_id: number;
+			muscle_group_id: number;
+		};
+		const exerciseFromDatabase = await sql<exerciseFromDatabase[]>`
+            SELECT * FROM exercises WHERE exercise_id = ${exerciseId}
+        `;
+		if (exerciseFromDatabase.length === 0) {
+			return null;
+		}
+		const exercise = exerciseFromDatabase[0];
+		return new Exercise(
+			exercise.exercise_id,
+			exercise.name,
+			exercise.number_of_sets,
+			exercise.number_of_reps,
+			exercise.set_weights,
+			exercise.workout_id,
+			exercise.muscle_group_id
+		);
 	}
-	getExerciseById(exerciseId: number) {
-		return this.exercises.find((exercise) => exercise.exerciseId === exerciseId);
+
+	static async getExerciseByName(name: string) {
+		type exerciseFromDatabase = {
+			exercise_id: number;
+			name: string;
+			number_of_sets: number;
+			number_of_reps: number;
+			set_weights: number[];
+			workout_id: number;
+			muscle_group_id: number;
+		};
+		const exerciseFromDatabase = await sql<exerciseFromDatabase[]>`
+            SELECT * FROM exercises WHERE name = ${name}
+        `;
+		if (exerciseFromDatabase.length === 0) {
+			return null;
+		}
+		const exercise = exerciseFromDatabase[0];
+		return new Exercise(
+			exercise.exercise_id,
+			exercise.name,
+			exercise.number_of_sets,
+			exercise.number_of_reps,
+			exercise.set_weights,
+			exercise.workout_id,
+			exercise.muscle_group_id
+		);
 	}
-	getExerciseByName(name: string) {
-		return this.exercises.find((exercise) => exercise.name === name);
+
+	static async addExercise(excerciseInfo: {
+		name: string;
+		number_of_sets?: number;
+		number_of_reps?: number;
+		set_weights?: number[];
+		workout_id?: number;
+		muscle_group_id?: number;
+	}) {
+		const row = await sql`
+            INSERT INTO exercises (
+                name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id
+            ) VALUES (
+                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${null}, ${excerciseInfo.muscle_group_id ?? null}
+            ) RETURNING exercise_id
+        `;
+		const exercise_id = row[0].exercise_id;
+
+		if (excerciseInfo.workout_id !== undefined) {
+			await WorkoutRepo.addExerciseToWorkout(excerciseInfo.workout_id, exercise_id);
+		}
+
+		return new Exercise(
+			row[0].exercise_id,
+			excerciseInfo.name,
+			excerciseInfo.number_of_sets ?? 0,
+			excerciseInfo.number_of_reps ?? 0,
+			excerciseInfo.set_weights ?? [0],
+			excerciseInfo.workout_id ?? null,
+			excerciseInfo.muscle_group_id ?? null
+		);
 	}
-	getExercises() {
-		return this.exercises;
-	}
-	async addExercise(name: string, muscleGroup: string, equipment: string) {
-		await sql`INSERT INTO exercises (name, muscleGroup, equipment) VALUES (${name}, ${muscleGroup}, ${equipment})`;
-		await this.populateExercises();
-	}
-	async updateExercise(
+
+	static async updateExercise(
 		exerciseId: number,
-		updates: { name?: string; muscleGroup?: string; equipment?: string }
+		updates: {
+			name?: string;
+			number_of_sets?: number;
+			number_of_reps?: number;
+			set_weights?: number[];
+			workout_id?: number;
+			muscle_group_id?: number;
+		}
 	) {
-		if (!updates.name && !updates.muscleGroup && !updates.equipment) {
+		if (
+			!updates.name &&
+			!updates.number_of_sets &&
+			!updates.number_of_reps &&
+			!updates.set_weights &&
+			!updates.workout_id &&
+			!updates.muscle_group_id
+		) {
 			return;
 		}
-		await sql`UPDATE exercises SET ${sql(updates)} WHERE exercise_id=${exerciseId}`;
-		await this.populateExercises();
+		await sql`
+            UPDATE exercises SET ${sql(updates)} WHERE exercise_id = ${exerciseId}
+        `;
+		const exercise = await this.getExerciseById(exerciseId);
+		return exercise;
 	}
-	async deleteExercise(exerciseId: number) {
-		await sql`DELETE FROM exercises WHERE exercise_id=${exerciseId}`;
-		await this.populateExercises();
+
+	static async deleteExercise(exerciseId: number) {
+		await sql`
+			DELETE FROM exercises WHERE exercise_id = ${exerciseId}
+		`;
 	}
 }

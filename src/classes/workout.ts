@@ -8,4 +8,7 @@ export default class Workout {
 		this.name = name;
 		this.exerciseList = exerciseList; // Array of exercise IDs
 	}
+	public setExerciseList(exerciseList: number[] = []) {
+		this.exerciseList = exerciseList;
+	}
 }
