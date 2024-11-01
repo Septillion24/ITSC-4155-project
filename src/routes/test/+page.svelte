@@ -98,6 +98,93 @@
 			console.error('Error:', error);
 		}
 	}
+
+	async function createMuscleGroup() {
+		try {
+			const response = await fetch('/api/create/muscleGroup', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					name: 'New Muscle Group',
+					exerciseIDs: [1, 2, 3]
+				})
+			});
+
+			const result = await response.json();
+			return result;
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
+	async function getMuscleGroups() {
+		try {
+			const response = await fetch('/api/get/muscleGroups');
+			const muscleGroups = await response.json();
+			console.log('Muscle Groups:', muscleGroups);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+	async function getMuscleGroupById() {
+		try {
+			const response = await fetch('/api/get/muscleGroupById', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					muscleGroupID: 1
+				})
+			});
+			const muscleGroup = await response.json();
+			console.log('Muscle Group:', muscleGroup);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
+	async function updateMuscleGroup() {
+		try {
+			const response = await fetch('/api/update/muscleGroup', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					muscle_group_id: 1,
+					name: 'Chest',
+					exercise_ids: [1, 2, 3, 4]
+				})
+			});
+
+			const result = await response.json();
+			console.log('Muscle Group updated:', result);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
+
+	async function deleteMuscleGroup() {
+		try {
+			const response = await fetch('/api/delete/muscleGroup', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					muscle_group_id: 6
+				})
+			});
+
+			const result = await response.json();
+			console.log('Muscle Group deleted:', result);
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	}
 </script>
 
 <button on:click={createExercise}>Create Exercise</button>
@@ -105,3 +192,9 @@
 <button on:click={getExercises}>Get Excercises</button>
 <button on:click={updateExercise}>Update Exercise</button>
 <button on:click={deleteExercise}>Delete Exercise</button>
+
+<button on:click={createMuscleGroup}>Create Muscle Group</button>
+<button on:click={getMuscleGroups}>Get Muscle Groups</button>
+<button on:click={getMuscleGroupById}>Get Muscle Group by ID</button>
+<button on:click={updateMuscleGroup}>Update Muscle Group</button>
+<button on:click={deleteMuscleGroup}>Delete Muscle Group</button>
