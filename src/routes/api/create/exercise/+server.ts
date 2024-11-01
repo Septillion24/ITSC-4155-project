@@ -3,6 +3,7 @@ import ExerciseRepo from '../../../../classes/ExcerciseRepo.js';
 export async function POST({ request }): Promise<Response> {
 	console.log('POST /api/create/exercise');
 	const requestJSON = await request.json();
+	console.log(requestJSON);
 	console.log('after requestJSON');
 	if (requestJSON.name === undefined) {
 		return new Response('Bad Request', { status: 400 });

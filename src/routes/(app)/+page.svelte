@@ -6,8 +6,8 @@
 	import type MuscleGroup from '../../classes/MuscleGroup';
 	import type Workout from '../../classes/Workout';
 
+	let showAddNewExerciseModal = false;
 	let showAddNewWorkoutsModal = false;
-	let showAddNewMuscleGroupModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 
 	let workouts: Workout[] = [];
@@ -16,19 +16,47 @@
 
 	let muscleGroups: MuscleGroup[] = [];
 
+	let workout: String = "";
 	let exerciseName: String;
-	let muscleGroup: String;
+	let muscleGroup: String = "";
 	let set: Number;
-	let lbs: Number;
+	let lbs: Number[];
 	let reps: Number;
 
 	onMount(async () => {
 		exercises = await (await fetch('/api/get/exercises')).json();
-		//workout = await (await fetch('/api/get/workouts')).json();
-		//muscleGroups = await (await fetch('/api/get/musclegroups')).json();
+		workouts = await (await fetch('/api/get/workouts')).json();
+		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
 		//set = bind:value={set}
 	});
 
+	async function submitNewWorkout(){
+		const response = fetch('/api/create/workout', {
+			method: 'POST' ,
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: workout
+			})
+		})
+	}
+
+	async function submitNewExercise(){
+		const response = fetch('/api/create/exercise', {
+			method: 'POST' ,
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				name: exerciseName,
+				numberOfSets: set,
+				numberOfReps: reps,
+				setWeights: lbs,
+				workoutID: currentlyEditingWorkout
+			})
+		})
+	}
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
 			if (exercise.exerciseId === id) {
@@ -38,7 +66,6 @@
 		return null;
 	}
 
-	$: console.log(exerciseName, muscleGroup);
 </script>
 
 <div class="container">
@@ -46,9 +73,9 @@
 		<div class="header-container">
 			<div class="header">WORKOUTS</div>
 			<button
-				class="add-musclegroup-button"
+				class="add-workout-button"
 				on:click={() => {
-					showAddNewMuscleGroupModal = true;
+					showAddNewWorkoutsModal = true;
 				}}
 			>
 				<div class="addText">
@@ -80,7 +107,7 @@
 						class="addExcercise"
 						on:click={() => {
 							currentlyEditingWorkout = workout.workoutId;
-							showAddNewWorkoutsModal = true;
+							showAddNewExerciseModal = true;
 						}}
 					>
 						<div class="addText">
@@ -132,23 +159,23 @@
 	</div>
 </div>
 
-<Modal bind:showModal={showAddNewMuscleGroupModal}>
+<Modal bind:showModal={showAddNewWorkoutsModal}>
 	<div class="modalContent">
 		<div class="label-input-container">
-			<label for="muscle-group">MuscleGroup</label>
+			<label for="workout">Workouts</label>
 			<input
-				bind:value={muscleGroup}
+				bind:value={workout}
 				type="text"
-				id="muscle-group"
-				name="muscle-group"
-				placeholder="Enter Muscle Group"
+				id="workout"
+				name="workout"
+				placeholder="Enter Workout"
 			/>
-			<button class="submit-button">Submit</button>
+			<button class="submit-button" on:click={submitNewWorkout}>Submit</button>
 		</div>
 	</div>
 </Modal>
 
-<Modal bind:showModal={showAddNewWorkoutsModal}>
+<Modal bind:showModal={showAddNewExerciseModal}>
 	<div class="modalContent">
 		<div class="label-input-container">
 			<label for="exercise-name">Exercise Name</label>
@@ -182,7 +209,6 @@
 			/>
 			<label for="lbs">Lbs</label>
 			<input bind:value={lbs} type="number" id="lbs" name="lbs" min="0" placeholder="Enter Lbs" />
-
 			<label for="reps">Reps</label>
 			<input
 				bind:value={reps}
@@ -194,7 +220,7 @@
 			/>
 		</div>
 		<button class="add-set-button">+ Add Set</button>
-		<button class="add-set-button">Submit</button>
+		<button class="add-set-button" on:click={submitNewExercise}>Submit</button>
 	</div>
 </Modal>
 
@@ -239,7 +265,7 @@
 				width: 100%;
 				border-bottom: 1px solid #616161;
 			}*/
-			.add-musclegroup-button {
+			.add-workout-button {
 				background-color: transparent;
 				color: #888;
 				border: none;
