@@ -6,11 +6,12 @@ export default class WorkoutRepo {
 		type workoutFromDatabase = {
 			workout_id: number;
 			name: string;
-			exerciseList: number[];
+			exercise_list: number[];
 		};
 		const workoutsFromDatabase = await sql<workoutFromDatabase[]>`SELECT * FROM workouts`;
+		console.log(workoutsFromDatabase);
 		return workoutsFromDatabase.map(
-			(workout) => new Workout(workout.workout_id, workout.name, workout.exerciseList)
+			(workout) => new Workout(workout.workout_id, workout.name, workout.exercise_list)
 		);
 	}
 

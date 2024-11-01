@@ -16,9 +16,9 @@
 
 	let muscleGroups: MuscleGroup[] = [];
 
-	let workout: String = "";
+	let workout: String = '';
 	let exerciseName: String;
-	let muscleGroup: String = "";
+	let muscleGroup: String = '';
 	let set: Number;
 	let lbs: Number[];
 	let reps: Number;
@@ -27,24 +27,23 @@
 		exercises = await (await fetch('/api/get/exercises')).json();
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
-		//set = bind:value={set}
 	});
 
-	async function submitNewWorkout(){
+	async function submitNewWorkout() {
 		const response = fetch('/api/create/workout', {
-			method: 'POST' ,
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
 				name: workout
 			})
-		})
+		});
 	}
 
-	async function submitNewExercise(){
+	async function submitNewExercise() {
 		const response = fetch('/api/create/exercise', {
-			method: 'POST' ,
+			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
@@ -55,9 +54,10 @@
 				setWeights: lbs,
 				workoutID: currentlyEditingWorkout
 			})
-		})
+		});
 	}
 	function getExerciseById(id: number) {
+		console.log('Getitng excercise with id: ' + id);
 		for (const exercise of exercises) {
 			if (exercise.exerciseId === id) {
 				return exercise;
@@ -66,98 +66,101 @@
 		return null;
 	}
 
+	$: console.log(workouts);
 </script>
 
-<div class="container">
-	<div class="workouts">
-		<div class="header-container">
-			<div class="header">WORKOUTS</div>
-			<button
-				class="add-workout-button"
-				on:click={() => {
-					showAddNewWorkoutsModal = true;
-				}}
-			>
-				<div class="addText">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						height="24px"
-						viewBox="0 -960 960 960"
-						width="24px"
-						fill="#5f6368"
-						><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-					>
-				</div>
-			</button>
-		</div>
-		{#each workouts as workout}
-			<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
-				<div class="workoutContent">
-					{#each workout.exerciseList as excerciseID}
-						{@const exercise = getExerciseById(excerciseID)}
-						{#if exercise !== null}
-							<div class="excercise">
-								<div class="name">{exercise.name}</div>
-								<div class="muscleGroup">{exercise.muscleGroupID}</div>
-								<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
+	<div class="container">
+		<div class="workouts">
+			<div class="header-container">
+				<div class="header">WORKOUTS</div>
+				<button
+					class="add-workout-button"
+					on:click={() => {
+						showAddNewWorkoutsModal = true;
+					}}
+				>
+					<div class="addText">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="24px"
+							viewBox="0 -960 960 960"
+							width="24px"
+							fill="#5f6368"
+							><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+						>
+					</div>
+				</button>
+			</div>
+			{#each workouts as workout}
+				<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
+					<div class="workoutContent">
+						{#each workout.exerciseList as excerciseID}
+							{@const exercise = getExerciseById(excerciseID)}
+							{#if exercise !== null}
+								<div class="excercise">
+									<div class="name">{exercise.name}</div>
+									<div class="muscleGroup">{exercise.muscleGroupID}</div>
+									<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+								</div>
+							{/if}
+						{/each}
+						<button
+							class="addExcercise"
+							on:click={() => {
+								currentlyEditingWorkout = workout.workoutId;
+								showAddNewExerciseModal = true;
+							}}
+						>
+							<div class="addText">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="24px"
+									viewBox="0 -960 960 960"
+									width="24px"
+									fill="#5f6368"
+									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+								>
+								<div class="text">New</div>
 							</div>
-						{/if}
-					{/each}
-					<button
-						class="addExcercise"
-						on:click={() => {
-							currentlyEditingWorkout = workout.workoutId;
-							showAddNewExerciseModal = true;
-						}}
-					>
-						<div class="addText">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								height="24px"
-								viewBox="0 -960 960 960"
-								width="24px"
-								fill="#5f6368"
-								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-							>
-							<div class="text">New</div>
-						</div>
-					</button>
-				</div>
-			</Accordion>
-		{/each}
-	</div>
-
-	<div class="muscleGroups">
-		<div class="header">MUSCLE GROUPS</div>
-		<div class="muscleGroupsContainer">
-			{#each muscleGroups as muscleGroup}
-				<div class="muscleGroup">
-					{muscleGroup.name}
-				</div>
+						</button>
+					</div>
+				</Accordion>
 			{/each}
-			<div class="addMuscleGroup">
-				<div class="addText">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						height="24px"
-						viewBox="0 -960 960 960"
-						width="24px"
-						fill="#5f6368"
-						><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-					>
-					<div class="text">New</div>
+		</div>
+
+		<div class="muscleGroups">
+			<div class="header">MUSCLE GROUPS</div>
+			<div class="muscleGroupsContainer">
+				{#each muscleGroups as muscleGroup}
+					<div class="muscleGroup">
+						{muscleGroup.name}
+					</div>
+				{/each}
+				<div class="addMuscleGroup">
+					<div class="addText">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="24px"
+							viewBox="0 -960 960 960"
+							width="24px"
+							fill="#5f6368"
+							><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+						>
+						<div class="text">New</div>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="workout-schedule">
-		<h4>WORKOUT SCHEDULE</h4>
-		<div class="schedule-day">Sun 08</div>
-		<div class="schedule-day">Mon 09</div>
-		<div class="schedule-day">...</div>
+		<div class="workout-schedule">
+			<h4>WORKOUT SCHEDULE</h4>
+			<div class="schedule-day">Sun 08</div>
+			<div class="schedule-day">Mon 09</div>
+			<div class="schedule-day">...</div>
+		</div>
 	</div>
-</div>
+{/if}
 
 <Modal bind:showModal={showAddNewWorkoutsModal}>
 	<div class="modalContent">
