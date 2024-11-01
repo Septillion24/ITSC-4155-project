@@ -45,11 +45,11 @@ export default class WorkoutRepo {
 		return new Workout(workout.workout_id, workout.name, workout.exerciseList);
 	}
 
-	static async addWorkout(name: string, exerciseList: number[]) {
+	static async addWorkout(name: string, exercise_list: number[]) {
 		const row =
-			await sql`INSERT INTO workouts (name, exerciseList) VALUES (${name}, ${exerciseList}) returning workout_id`;
+			await sql`INSERT INTO workouts (name, exercise_list) VALUES (${name}, ${exercise_list}) returning workout_id`;
 		const workoutID = row[0].workout_id;
-		return new Workout(workoutID, name, exerciseList);
+		return new Workout(workoutID, name, exercise_list);
 	}
 
 	static async updateWorkout(
@@ -60,6 +60,7 @@ export default class WorkoutRepo {
 			return;
 		}
 		await sql`UPDATE workouts SET ${sql(updates)} WHERE workout_id=${workoutId}`;
+		return await this.getWorkoutById(workoutId);
 	}
 	static async deleteWorkout(workoutId: number) {
 		await sql`DELETE FROM workouts WHERE workout_id=${workoutId}`;
