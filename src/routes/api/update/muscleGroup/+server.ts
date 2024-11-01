@@ -1,18 +1,18 @@
 import MuscleGroupRepo from '../../../../classes/MuscleGroupRepo.js';
-
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
-	if (requestJSON.name === undefined) {
+
+	if (requestJSON.muscle_group_id === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
-	const muscleGroupInfo = {
-		name: requestJSON.name,
-		exercise_ids: requestJSON.exerciseIDs
-	};
-
-	const muscleGroup = await MuscleGroupRepo.addMuscleGroup(
-		muscleGroupInfo.name,
-		muscleGroupInfo.exercise_ids
+	console.log(requestJSON.muscle_group_id);
+	const muscleGroup = await MuscleGroupRepo.updateMuscleGroup(
+		requestJSON.muscle_group_id,
+		requestJSON
 	);
+
+	if (!muscleGroup) {
+		return new Response('MuscleGroup not found', { status: 404 });
+	}
 	return new Response(JSON.stringify(muscleGroup), { status: 200 });
 }

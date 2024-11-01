@@ -51,7 +51,7 @@ export default class MuscleGroupRepo {
 
 	static async addMuscleGroup(name: string, exerciseIds: number[]) {
 		const row =
-			await sql`INSERT INTO muscle_groups (name, exerciseIds) VALUES (${name}, ${exerciseIds}) returning muscle_group_id`;
+			await sql`INSERT INTO muscle_groups (name, exercise_ids) VALUES (${name}, ${exerciseIds}) returning muscle_group_id`;
 		return new MuscleGroup(row[0].muscle_group_id, name, exerciseIds);
 	}
 
@@ -63,5 +63,10 @@ export default class MuscleGroupRepo {
 			return;
 		}
 		await sql`UPDATE muscle_groups SET ${sql(updates)} WHERE muscle_group_id=${muscleGroupId}`;
+		return await this.getMuscleGroupById(muscleGroupId);
+	}
+
+	static async deleteMuscleGroup(muscleGroupId: number) {
+		await sql`DELETE FROM muscle_groups WHERE muscle_group_id=${muscleGroupId}`;
 	}
 }
