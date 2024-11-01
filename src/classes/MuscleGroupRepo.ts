@@ -1,4 +1,4 @@
-import sql from '$lib/_databaseConnection';
+import sql from '$lib/DatabaseConnection';
 import MuscleGroup from './MuscleGroup';
 
 export default class MuscleGroupRepo {
