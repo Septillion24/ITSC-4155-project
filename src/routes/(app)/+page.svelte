@@ -27,7 +27,7 @@
 		exercises = await (await fetch('/api/get/exercises')).json();
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
-		//set = bind:value={set}
+		console.log(exercises);
 	});
 
 	async function submitNewWorkout(){
@@ -53,13 +53,14 @@
 				numberOfSets: set,
 				numberOfReps: reps,
 				setWeights: lbs,
-				workoutID: currentlyEditingWorkout
+				workoutId: currentlyEditingWorkout
 			})
 		})
 	}
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
 			if (exercise.exerciseId === id) {
+				console.log(exercise);
 				return exercise;
 			}
 		}
@@ -67,7 +68,7 @@
 	}
 
 </script>
-
+{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0 }
 <div class="container">
 	<div class="workouts">
 		<div class="header-container">
@@ -158,7 +159,7 @@
 		<div class="schedule-day">...</div>
 	</div>
 </div>
-
+{/if}
 <Modal bind:showModal={showAddNewWorkoutsModal}>
 	<div class="modalContent">
 		<div class="label-input-container">
