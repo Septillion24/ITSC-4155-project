@@ -1,5 +1,6 @@
 import sql from '$lib/DatabaseConnection';
 import Workout from './Workout';
+
 export default class WorkoutRepo {
 	static async getWorkouts() {
 		type workoutFromDatabase = {
@@ -64,5 +65,9 @@ export default class WorkoutRepo {
 	}
 	static async deleteWorkout(workoutId: number) {
 		await sql`DELETE FROM workouts WHERE workout_id=${workoutId}`;
+	}
+
+	static async addExerciseToWorkout(workoutId: number, exerciseId: number) {
+		await sql`UPDATE workouts SET exercise_list = array_append(exercise_list, ${exerciseId}) WHERE workout_id=${workoutId}`;
 	}
 }

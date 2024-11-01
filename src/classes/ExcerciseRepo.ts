@@ -1,6 +1,6 @@
 import sql from '$lib/DatabaseConnection';
 import Exercise from './Exercise';
-
+import WorkoutRepo from './WorkoutRepo';
 export default class ExerciseRepo {
 	static async getExercises() {
 		type exerciseFromDatabase = {
@@ -95,9 +95,14 @@ export default class ExerciseRepo {
             INSERT INTO exercises (
                 name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id
             ) VALUES (
-                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${excerciseInfo.workout_id ?? null}, ${excerciseInfo.muscle_group_id ?? null}
+                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${null}, ${excerciseInfo.muscle_group_id ?? null}
             ) RETURNING exercise_id
         `;
+		const exercise_id = row[0].exercise_id;
+
+		if (excerciseInfo.workout_id !== undefined) {
+			await WorkoutRepo.addExerciseToWorkout(excerciseInfo.workout_id, exercise_id);
+		}
 
 		return new Exercise(
 			row[0].exercise_id,
