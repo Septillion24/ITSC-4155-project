@@ -38,6 +38,8 @@
 	"type": "module",
 	"dependencies": {
 		"@auth/core": "^0.37.3",
-		"postgres": "^3.4.4"
+		"google-auth-library": "^9.15.0",
+		"postgres": "^3.4.4",
+		"uuid": "^11.0.3"
 	}
 }

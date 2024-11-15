@@ -1,4 +1,4 @@
-class User {
+export class User {
 	user_id: number;
 	username: string;
 	email: string;
