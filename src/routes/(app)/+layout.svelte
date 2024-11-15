@@ -1,6 +1,9 @@
 <div class="wrapper">
 	<main>
-		<header><img src="banner.png" alt="banner" /></header>
+		<header>
+			<img src="banner.png" alt="banner" />
+			<a href="/login"> Login </a>
+		</header>
 		<slot />
 	</main>
 </div>
