@@ -11,6 +11,7 @@ export default class ExerciseRepo {
 			set_weights: number[];
 			workout_id: number;
 			muscle_group_id: number;
+			user_id: number;
 		};
 		const exercisesFromDatabase = await sql<exerciseFromDatabase[]>`SELECT * FROM exercises`;
 		return exercisesFromDatabase.map(
@@ -22,12 +23,13 @@ export default class ExerciseRepo {
 					exercise.number_of_reps,
 					exercise.set_weights,
 					exercise.workout_id,
-					exercise.muscle_group_id
+					exercise.muscle_group_id,
+					exercise.user_id
 				)
 		);
 	}
 
-	static async getExerciseById(exerciseId: number) {
+	static async getExerciseByID(exerciseId: number) {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -36,6 +38,7 @@ export default class ExerciseRepo {
 			set_weights: number[];
 			workout_id: number;
 			muscle_group_id: number;
+			user_id: number;
 		};
 		const exerciseFromDatabase = await sql<exerciseFromDatabase[]>`
             SELECT * FROM exercises WHERE exercise_id = ${exerciseId}
@@ -51,7 +54,8 @@ export default class ExerciseRepo {
 			exercise.number_of_reps,
 			exercise.set_weights,
 			exercise.workout_id,
-			exercise.muscle_group_id
+			exercise.muscle_group_id,
+			exercise.user_id
 		);
 	}
 
@@ -64,6 +68,7 @@ export default class ExerciseRepo {
 			set_weights: number[];
 			workout_id: number;
 			muscle_group_id: number;
+			user_id: number;
 		};
 		const exerciseFromDatabase = await sql<exerciseFromDatabase[]>`
             SELECT * FROM exercises WHERE name = ${name}
@@ -79,7 +84,8 @@ export default class ExerciseRepo {
 			exercise.number_of_reps,
 			exercise.set_weights,
 			exercise.workout_id,
-			exercise.muscle_group_id
+			exercise.muscle_group_id,
+			exercise.user_id
 		);
 	}
 
@@ -90,12 +96,13 @@ export default class ExerciseRepo {
 		set_weights?: number[];
 		workout_id?: number;
 		muscle_group_id?: number;
+		user_id?: number;
 	}) {
 		const row = await sql`
             INSERT INTO exercises (
                 name, number_of_sets, number_of_reps, set_weights, workout_id, muscle_group_id
             ) VALUES (
-                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${null}, ${excerciseInfo.muscle_group_id ?? null}
+                ${excerciseInfo.name}, ${excerciseInfo.number_of_sets ?? 0}, ${excerciseInfo.number_of_reps ?? 0}, ${sql.array(excerciseInfo.set_weights ?? [0])}::int[], ${null}, ${excerciseInfo.muscle_group_id ?? null}, ${excerciseInfo.user_id ?? null}
             ) RETURNING exercise_id
         `;
 		const exercise_id = row[0].exercise_id;
@@ -111,7 +118,8 @@ export default class ExerciseRepo {
 			excerciseInfo.number_of_reps ?? 0,
 			excerciseInfo.set_weights ?? [0],
 			excerciseInfo.workout_id ?? null,
-			excerciseInfo.muscle_group_id ?? null
+			excerciseInfo.muscle_group_id ?? null,
+			excerciseInfo.user_id ?? null
 		);
 	}
 
@@ -124,6 +132,7 @@ export default class ExerciseRepo {
 			set_weights?: number[];
 			workout_id?: number;
 			muscle_group_id?: number;
+			user_id?: number;
 		}
 	) {
 		if (
@@ -132,14 +141,15 @@ export default class ExerciseRepo {
 			!updates.number_of_reps &&
 			!updates.set_weights &&
 			!updates.workout_id &&
-			!updates.muscle_group_id
+			!updates.muscle_group_id &&
+			!updates.user_id
 		) {
 			return;
 		}
 		await sql`
             UPDATE exercises SET ${sql(updates)} WHERE exercise_id = ${exerciseId}
         `;
-		const exercise = await this.getExerciseById(exerciseId);
+		const exercise = await this.getExerciseByID(exerciseId);
 		return exercise;
 	}
 

@@ -14,7 +14,8 @@ export async function POST({ request }): Promise<Response> {
 		number_of_sets: requestJSON.numberOfSets,
 		number_of_reps: requestJSON.numberOfReps,
 		set_weights: requestJSON.setWeights,
-		workout_id: requestJSON.workoutId
+		workout_id: requestJSON.workoutId,
+		user_id: requestJSON.userID
 	};
 	console.log('excerciseInfo:');
 

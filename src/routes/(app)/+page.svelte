@@ -52,14 +52,15 @@
 				numberOfSets: set,
 				numberOfReps: reps,
 				setWeights: lbs,
-				workoutId: currentlyEditingWorkout
+				workoutId: currentlyEditingWorkout,
+				userID: null //Needs userID once added
 			})
 		});
 	}
 	function getExerciseById(id: number) {
 		console.log('Getitng excercise with id: ' + id);
 		for (const exercise of exercises) {
-			if (exercise.exerciseId === id) {
+			if (exercise.exerciseID === id) {
 				console.log(exercise);
 				return exercise;
 			}
