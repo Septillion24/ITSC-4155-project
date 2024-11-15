@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@auth/core": "^0.37.3",
 		"postgres": "^3.4.4"
 	}
 }
