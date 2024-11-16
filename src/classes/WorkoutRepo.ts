@@ -10,7 +10,6 @@ export default class WorkoutRepo {
 			user_id: number;
 		};
 		const workoutsFromDatabase = await sql<workoutFromDatabase[]>`SELECT * FROM workouts`;
-		console.log(workoutsFromDatabase);
 		return workoutsFromDatabase.map(
 			(workout) =>
 				new Workout(workout.workout_id, workout.name, workout.exercise_list, workout.user_id)

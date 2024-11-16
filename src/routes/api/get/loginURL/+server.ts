@@ -6,5 +6,5 @@ export async function GET(): Promise<Response> {
 }
 
 async function getURL() {
-	return SessionManager.getRedirectURL();
+	return await SessionManager.getRedirectURL();
 }

@@ -246,11 +246,6 @@
 </Modal>
 
 <style lang="scss">
-	:global(body) {
-		margin: 0;
-		padding: 0;
-	}
-
 	.container {
 		font-family: sans-serif;
 		background-color: #616161;

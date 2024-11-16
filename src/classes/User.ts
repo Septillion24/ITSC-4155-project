@@ -1,18 +1,12 @@
 export class User {
-	user_id: number;
+	id: number;
 	username: string;
 	email: string;
 	first_name: string;
 	last_name: string;
 
-	constructor(
-		user_id: number,
-		username: string,
-		email: string,
-		first_name: string,
-		last_name: string
-	) {
-		this.user_id = user_id;
+	constructor(id: number, username: string, email: string, first_name: string, last_name: string) {
+		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.first_name = first_name;
