@@ -2,7 +2,7 @@ import sql from '$lib/DatabaseConnection';
 
 import { v4 as uuid } from 'uuid';
 
-import { GoogleAuth, OAuth2Client } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 
 import { GOOGLE_CLIENT_ID } from '$env/static/private';
 import { GOOGLE_CLIENT_SECRET } from '$env/static/private';
@@ -12,7 +12,6 @@ import UserRepo from './UserRepo';
 export type Session = {
 	uuid: string;
 	memberID: string;
-	expiration: Date;
 };
 
 export class SessionManager {
@@ -61,6 +60,7 @@ export class SessionManager {
 		}
 
 		const userID = sessionRow[0].user_id;
+		console.log('userID:', userID);
 		const user = await UserRepo.getUserByID(userID);
 		return user;
 	}
@@ -68,19 +68,19 @@ export class SessionManager {
 	static async getSessionFromGoogleCode(googleCode: string): Promise<Session> {
 		const id = await this.getIdFromGoogleCode(googleCode);
 		const newUUID: string = uuid();
-		// TODO: jame
-		// go through all existing sessions and see if it has one
-		// if it does, delete that one
-		// create a new one with a new uuid
 		await sql`DELETE FROM sessions WHERE user_id = ${id}`;
 		const sessionRow = await sql`
-			INSERT INTO sessions (uuid, user_id, expiration) VALUES (${newUUID}, ${id}) returning *
+			INSERT INTO sessions (uuid, user_id) VALUES (${newUUID}, ${id}) returning *
 		`;
 		const session: Session = {
 			uuid: sessionRow[0].uuid,
-			memberID: sessionRow[0].user_id,
-			expiration: sessionRow[0].expiration
+			memberID: sessionRow[0].user_id
 		};
+		const userRow = await sql`select * from users where user_id = ${id}`;
+		// const firstName = await this.getNameFromGoogleCode(googleCode);
+		if (userRow.length === 0) {
+			await sql`insert into users (user_id) values (${id})`;
+		}
 		return session;
 	}
 
@@ -88,6 +88,11 @@ export class SessionManager {
 		const credentials = await SessionManager.getTokens(googleCode!);
 		return await SessionManager.getIDFromToken(credentials.access_token!);
 	}
+
+	// static async getNameFromGoogleCode(googleCode: string) {
+	// 	const credentials = await SessionManager.getTokens(googleCode!);
+	// 	return await SessionManager.getNameFromToken(credentials.access_token!);
+	// }
 
 	static async getTokens(authCode: string) {
 		this.verifyInitializtion();
@@ -119,7 +124,30 @@ export class SessionManager {
 			});
 
 			const userInfo = await response.json();
+			console.log('userInfo:', userInfo);
 			return userInfo.id;
 		}
 	}
+	// static async getNameFromToken(idToken: string) {
+	// 	this.verifyInitializtion();
+
+	// 	if (idToken.split('.').length === 3) {
+	// 		const ticket = await this.oAuth2Client.verifyIdToken({
+	// 			idToken,
+	// 			audience: GOOGLE_CLIENT_ID
+	// 		});
+
+	// 		const payload = ticket.getPayload();
+	// 		return payload;
+	// 	} else {
+	// 		const response = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+	// 			headers: {
+	// 				Authorization: `Bearer ${idToken}`
+	// 			}
+	// 		});
+
+	// 		const userInfo = await response.json();
+	// 		return userInfo.id;
+	// 	}
+	// }
 }
