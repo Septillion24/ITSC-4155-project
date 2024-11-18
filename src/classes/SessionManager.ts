@@ -1,13 +1,13 @@
 import sql from '$lib/DatabaseConnection';
 
 import { v4 as uuid } from 'uuid';
-import type { User } from './User';
 
 import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 
 import { GOOGLE_CLIENT_ID } from '$env/static/private';
 import { GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { GOOGLE_REDIRECT_URI } from '$env/static/private';
+import UserRepo from './UserRepo';
 
 export type Session = {
 	uuid: string;
@@ -48,16 +48,40 @@ export class SessionManager {
 	// }
 
 	static async getUserFromUUID(uuid: string) {
-		//TODO: jame
+		type sessionRow = {
+			uuid: string;
+			user_id: string;
+			expiration: Date;
+		};
+		const sessionRow = await sql<sessionRow[]>`
+			SELECT * FROM sessions WHERE uuid = ${uuid}
+		`;
+		if (sessionRow.length === 0) {
+			return null;
+		}
+
+		const userID = sessionRow[0].user_id;
+		const user = await UserRepo.getUserByID(userID);
+		return user;
 	}
 
-	static async getSessionFromGoogleCode(googleCode: string): Session {
-		const id = this.getIdFromGoogleCode(googleCode);
+	static async getSessionFromGoogleCode(googleCode: string): Promise<Session> {
+		const id = await this.getIdFromGoogleCode(googleCode);
 		const newUUID: string = uuid();
 		// TODO: jame
 		// go through all existing sessions and see if it has one
 		// if it does, delete that one
 		// create a new one with a new uuid
+		await sql`DELETE FROM sessions WHERE user_id = ${id}`;
+		const sessionRow = await sql`
+			INSERT INTO sessions (uuid, user_id, expiration) VALUES (${newUUID}, ${id}) returning *
+		`;
+		const session: Session = {
+			uuid: sessionRow[0].uuid,
+			memberID: sessionRow[0].user_id,
+			expiration: sessionRow[0].expiration
+		};
+		return session;
 	}
 
 	static async getIdFromGoogleCode(googleCode: string) {
