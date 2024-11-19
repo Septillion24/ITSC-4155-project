@@ -269,13 +269,10 @@
 		flex-wrap: wrap;
 		flex-direction: row;
 		margin: 0 auto;
-		// padding: 20px;
 		min-height: 100%;
 		row-gap: 10px;
 		max-width: 916px;
 		width: calc(100% - 20px);
-		// padding-left: 25%;
-		// padding-right: 25%;
 		box-sizing: border-box;
 		&:hover {
 			.card::after {
@@ -350,13 +347,13 @@
 				padding: 4px 15px 0px;
 				border-bottom: 1px solid #616161;
 			}
-			/*.header {
+			.header {
 				padding: 10px;
 				padding-left: 15px;
 				padding-bottom: 5px;
 				width: 100%;
 				border-bottom: 1px solid #616161;
-			}*/
+			}
 			.add-workout-button {
 				background-color: transparent;
 				color: #888;
@@ -440,7 +437,6 @@
 			margin: 8px;
 			box-sizing: border-box;
 			width: calc(50% - 16px);
-			// background-color: #444;
 			border-radius: 10px;
 			.header {
 				padding: 10px;
@@ -454,7 +450,6 @@
 				display: flex;
 				flex-direction: row;
 				flex-wrap: wrap;
-				// justify-content: center;
 				gap: 20px;
 				padding: 15px;
 				box-sizing: border-box;
@@ -474,7 +469,6 @@
 					padding: 3px;
 					justify-content: center;
 					align-items: center;
-					// font-size: 1.05em;
 					cursor: pointer;
 					.addText {
 						display: flex;
@@ -502,12 +496,10 @@
 				}
 			}
 		}
-
 		.workout-schedule {
 			margin: 10px;
 			box-sizing: border-box;
 			width: 100%;
-			// background-color: #444;
 			border-radius: 10px;
 			.card-content {
 				padding: 20px;
