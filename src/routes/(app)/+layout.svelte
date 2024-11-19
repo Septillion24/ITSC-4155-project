@@ -1,17 +1,24 @@
 <div class="wrapper">
 	<main>
-		<header><img src="banner.png" alt="banner" /></header>
+		<header>
+			<img src="banner.png" alt="banner" />
+			<a href="/login"> Login </a>
+		</header>
 		<slot />
 	</main>
 </div>
 
 <style lang="scss">
+	:global(body) {
+		margin: 0;
+		padding: 0;
+	}
 	.wrapper {
 		min-height: 100vh;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		background-color: #616161;
+		background-color: #202020;
 		main {
 			flex: 1;
 			display: flex;

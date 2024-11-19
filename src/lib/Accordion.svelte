@@ -59,8 +59,10 @@
 					}
 				}
 				.excerciseName {
-					font-size: 10pt;
+					font-size: 11pt;
 					padding: 5px;
+					color: lightgray;
+					font-family: sans-serif;
 				}
 				.excerciseNumber {
 					padding: 5px;

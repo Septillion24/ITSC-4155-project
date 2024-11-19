@@ -52,114 +52,146 @@
 				numberOfSets: set,
 				numberOfReps: reps,
 				setWeights: lbs,
-				workoutId: currentlyEditingWorkout
+				workoutId: currentlyEditingWorkout,
+				userID: null //Needs userID once added
 			})
 		});
 	}
+
 	function getExerciseById(id: number) {
-		console.log('Getitng excercise with id: ' + id);
 		for (const exercise of exercises) {
-			if (exercise.exerciseId === id) {
-				console.log(exercise);
+			if (exercise.exerciseID === id) {
 				return exercise;
 			}
 		}
 		return null;
 	}
 
-	$: console.log(workouts);
+	function onMouseMoveContainer(e: MouseEvent) {
+		for (const card of document.getElementsByClassName('card')) {
+			const rect = card.getBoundingClientRect(),
+				x = e.clientX - rect.left,
+				y = e.clientY - rect.top;
+
+			(card as HTMLDivElement).style.setProperty('--mouse-x', `${x}px`);
+			(card as HTMLDivElement).style.setProperty('--mouse-y', `${y}px`);
+		}
+	}
 </script>
 
 {#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
-	<div class="container">
-		<div class="workouts">
-			<div class="header-container">
-				<div class="header">WORKOUTS</div>
-				<button
-					class="add-workout-button"
-					on:click={() => {
-						showAddNewWorkoutsModal = true;
-					}}
-				>
-					<div class="addText">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							height="24px"
-							viewBox="0 -960 960 960"
-							width="24px"
-							fill="#5f6368"
-							><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-						>
-					</div>
-				</button>
-			</div>
-			{#each workouts as workout}
-				<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
-					<div class="workoutContent">
-						{#each workout.exerciseList as excerciseID}
-							{@const exercise = getExerciseById(excerciseID)}
-							{#if exercise !== null}
-								<div class="excercise">
-									<div class="name">{exercise.name}</div>
-									<div class="muscleGroup">{exercise.muscleGroupID}</div>
-									<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+	<!-- svelte-ignore a11y-no-static-element-interactions -->
+	<div class="container" on:mousemove={onMouseMoveContainer}>
+		<div class="card workouts">
+			<div class="card-content">
+				<div class="header-container">
+					<div class="header">WORKOUTS</div>
+					<button
+						class="add-workout-button"
+						on:click={() => {
+							showAddNewWorkoutsModal = true;
+						}}
+					>
+						<div class="addText">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								height="24px"
+								viewBox="0 -960 960 960"
+								width="24px"
+								fill="#5f6368"
+								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+							>
+						</div>
+					</button>
+				</div>
+				{#each workouts as workout}
+					<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
+						<div class="workoutContent">
+							{#each workout.exerciseList as excerciseID}
+								{@const exercise = getExerciseById(excerciseID)}
+								{#if exercise !== null}
+									<div class="excercise">
+										<div class="name">{exercise.name}</div>
+										<div class="muscleGroup">{exercise.muscleGroupID}</div>
+										<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+									</div>
+								{/if}
+							{/each}
+							<button
+								class="addExcercise"
+								on:click={() => {
+									currentlyEditingWorkout = workout.workoutId;
+									showAddNewExerciseModal = true;
+								}}
+							>
+								<div class="addText">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										height="24px"
+										viewBox="0 -960 960 960"
+										width="24px"
+										fill="#5f6368"
+										><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+									>
+									<div class="text">New</div>
 								</div>
-							{/if}
-						{/each}
-						<button
-							class="addExcercise"
-							on:click={() => {
-								currentlyEditingWorkout = workout.workoutId;
-								showAddNewExerciseModal = true;
-							}}
-						>
-							<div class="addText">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									height="24px"
-									viewBox="0 -960 960 960"
-									width="24px"
-									fill="#5f6368"
-									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-								>
-								<div class="text">New</div>
-							</div>
-						</button>
-					</div>
-				</Accordion>
-			{/each}
+							</button>
+						</div>
+					</Accordion>
+				{/each}
+			</div>
 		</div>
 
-		<div class="muscleGroups">
-			<div class="header">MUSCLE GROUPS</div>
-			<div class="muscleGroupsContainer">
-				{#each muscleGroups as muscleGroup}
-					<div class="muscleGroup">
-						{muscleGroup.name}
-					</div>
-				{/each}
-				<div class="addMuscleGroup">
-					<div class="addText">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							height="24px"
-							viewBox="0 -960 960 960"
-							width="24px"
-							fill="#5f6368"
-							><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-						>
-						<div class="text">New</div>
+		<div class="card muscleGroups">
+			<div class="card-content">
+				<div class="header">MUSCLE GROUPS</div>
+				<div class="muscleGroupsContainer">
+					{#each muscleGroups as muscleGroup}
+						<div class="muscleGroup">
+							{muscleGroup.name}
+						</div>
+					{/each}
+					<div class="addMuscleGroup">
+						<div class="addText">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								height="24px"
+								viewBox="0 -960 960 960"
+								width="24px"
+								fill="#5f6368"
+								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+							>
+							<div class="text">New</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="workout-schedule">
-			<h4>WORKOUT SCHEDULE</h4>
-			<div class="schedule-day">Sun 08</div>
-			<div class="schedule-day">Mon 09</div>
-			<div class="schedule-day">...</div>
+		<div class="card workout-schedule">
+			<div class="card-content">
+				<h4>WORKOUT SCHEDULE</h4>
+				<div class="schedule-day">Sun 08</div>
+				<div class="schedule-day">Mon 09</div>
+				<div class="schedule-day">...</div>
+			</div>
 		</div>
+	</div>
+{:else}
+	<div class="loadingGraphic">
+		<svg
+			class="spinning"
+			xmlns="http://www.w3.org/2000/svg"
+			height="24px"
+			viewBox="0 -960 960 960"
+			width="24px"
+			fill="white"
+		>
+			<path
+				d="M160-160v-80h110l-16-14q-52-46-73-105t-21-119q0-111 66.5-197.5T400-790v84q-72 26-116 88.5T240-478q0 45 17 87.5t53 78.5l10 10v-98h80v240H160Zm400-10v-84q72-26 116-88.5T720-482q0-45-17-87.5T650-648l-10-10v98h-80v-240h240v80H690l16 14q49 49 71.5 106.5T800-482q0 111-66.5 197.5T560-170Z"
+			/>
+		</svg>
+		Loading....
 	</div>
 {/if}
 
@@ -229,31 +261,84 @@
 </Modal>
 
 <style lang="scss">
-	:global(body) {
-		margin: 0;
-		padding: 0;
-	}
-
 	.container {
 		font-family: sans-serif;
-		background-color: #616161;
+		background-color: #202020;
 		color: rgb(228, 228, 228);
 		display: flex;
 		flex-wrap: wrap;
 		flex-direction: row;
 		margin: 0 auto;
-		padding: 20px;
 		min-height: 100%;
 		row-gap: 10px;
-		width: 100%;
-		padding-left: 25%;
-		padding-right: 25%;
+		max-width: 916px;
+		width: calc(100% - 20px);
 		box-sizing: border-box;
+		&:hover {
+			.card::after {
+				opacity: 1;
+			}
+		}
+		.card {
+			background-color: rgba(255, 255, 255, 0.1);
+			border-radius: 10px;
+			display: flex;
+			flex-direction: column;
+			position: relative;
+			z-index: 1;
+
+			&:hover::before {
+				opacity: 1;
+			}
+
+			&::before,
+			&::after {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				border-radius: inherit;
+				opacity: 0;
+				transition: opacity 500ms;
+				pointer-events: none;
+			}
+
+			&::before {
+				background: radial-gradient(
+					800px circle at var(--mouse-x) var(--mouse-y),
+					rgba(255, 255, 255, 0.06),
+					transparent 40%
+				);
+				z-index: 3;
+			}
+
+			&::after {
+				background: radial-gradient(
+					800px circle at var(--mouse-x) var(--mouse-y),
+					rgba(255, 255, 255, 0.4),
+					transparent 40%
+				);
+				z-index: 1;
+			}
+
+			> .card-content {
+				position: relative;
+				background-color: #222;
+				border-radius: inherit;
+				display: flex;
+				flex-direction: column;
+				flex-grow: 1;
+				margin: 1px;
+				padding: 10px;
+				z-index: 2;
+			}
+		}
 		.workouts {
 			margin: 8px;
 			box-sizing: border-box;
 			width: calc(50% - 16px);
-			background-color: #444;
 			border-radius: 10px;
 			.header-container {
 				display: flex;
@@ -262,13 +347,12 @@
 				padding: 4px 15px 0px;
 				border-bottom: 1px solid #616161;
 			}
-			/*.header {
+			.header {
 				padding: 10px;
 				padding-left: 15px;
 				padding-bottom: 5px;
 				width: 100%;
-				border-bottom: 1px solid #616161;
-			}*/
+			}
 			.add-workout-button {
 				background-color: transparent;
 				color: #888;
@@ -352,7 +436,6 @@
 			margin: 8px;
 			box-sizing: border-box;
 			width: calc(50% - 16px);
-			background-color: #444;
 			border-radius: 10px;
 			.header {
 				padding: 10px;
@@ -366,7 +449,6 @@
 				display: flex;
 				flex-direction: row;
 				flex-wrap: wrap;
-				// justify-content: center;
 				gap: 20px;
 				padding: 15px;
 				box-sizing: border-box;
@@ -386,7 +468,6 @@
 					padding: 3px;
 					justify-content: center;
 					align-items: center;
-					// font-size: 1.05em;
 					cursor: pointer;
 					.addText {
 						display: flex;
@@ -414,14 +495,14 @@
 				}
 			}
 		}
-
 		.workout-schedule {
 			margin: 10px;
 			box-sizing: border-box;
 			width: 100%;
-			background-color: #444;
-			padding: 20px;
 			border-radius: 10px;
+			.card-content {
+				padding: 20px;
+			}
 			.schedule-day {
 				margin-bottom: 10px;
 				background-color: #666;
@@ -502,6 +583,32 @@
 		}
 		100% {
 			transform: rotate(0);
+		}
+	}
+	.loadingGraphic {
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		padding-top: 30vh;
+		color: rgb(192, 192, 192);
+		font-family: sans-serif;
+		svg {
+			width: 4vw;
+			height: 4vw;
+		}
+	}
+	.spinning {
+		animation: spin 2s linear infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(364deg);
+		}
+		to {
+			transform: rotate(0deg);
 		}
 	}
 </style>
