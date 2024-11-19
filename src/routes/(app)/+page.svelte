@@ -352,7 +352,6 @@
 				padding-left: 15px;
 				padding-bottom: 5px;
 				width: 100%;
-				border-bottom: 1px solid #616161;
 			}
 			.add-workout-button {
 				background-color: transparent;
