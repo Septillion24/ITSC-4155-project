@@ -5,7 +5,6 @@ export async function POST({ request }): Promise<Response> {
 	if (requestJSON.muscle_group_id === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
-	console.log(requestJSON.muscle_group_id);
 	const muscleGroup = await MuscleGroupRepo.updateMuscleGroup(
 		requestJSON.muscle_group_id,
 		requestJSON

@@ -58,17 +58,13 @@
 		});
 	}
 	function getExerciseById(id: number) {
-		console.log('Getitng excercise with id: ' + id);
 		for (const exercise of exercises) {
 			if (exercise.exerciseID === id) {
-				console.log(exercise);
 				return exercise;
 			}
 		}
 		return null;
 	}
-
-	$: console.log(workouts);
 </script>
 
 {#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}

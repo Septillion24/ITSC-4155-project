@@ -2,7 +2,6 @@ import MuscleGroupRepo from '../../../../classes/MuscleGroupRepo.js';
 
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
-	console.log(requestJSON);
 	if (requestJSON.name === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
