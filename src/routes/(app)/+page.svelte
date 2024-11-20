@@ -2,8 +2,8 @@
 	import Accordion from '$lib/Accordion.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { onMount } from 'svelte';
-	import Exercise from '../../classes/Exercise';
-	import type MuscleGroup from '../../classes/MuscleGroup';
+	import type { Exercise } from '../../classes/Exercise';
+	import type { MuscleGroup } from '../../classes/MuscleGroup';
 	import type Workout from '../../classes/Workout';
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 
