@@ -1,4 +1,4 @@
-import type { Cookies } from '@sveltejs/kit';
+import { redirect, type Cookies } from '@sveltejs/kit';
 import { SessionManager } from '../../../classes/SessionManager.js';
 import type { User } from '../../../classes/User.js';
 
@@ -7,9 +7,9 @@ export async function GET({ url, cookies }): Promise<Response> {
 	const session = await SessionManager.getSessionFromGoogleCode(googleCode!);
 	const user = await SessionManager.getUserFromUUID(session.uuid);
 
-	storeSessionDataInCookies(cookies, session.uuid, user);
+	storeSessionDataInCookies(cookies, session.uuid, user!);
 
-	return new Response(JSON.stringify(session), { status: 200 });
+	throw redirect(302, '/');
 }
 
 function storeSessionDataInCookies(cookies: Cookies, token: string, user: User) {

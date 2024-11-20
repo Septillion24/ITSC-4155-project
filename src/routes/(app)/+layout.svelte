@@ -18,7 +18,7 @@
 		width: 100%;
 		display: flex;
 		flex-direction: column;
-		background-color: #616161;
+		background-color: #202020;
 		main {
 			flex: 1;
 			display: flex;

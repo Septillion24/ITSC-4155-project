@@ -60,7 +60,6 @@ export class SessionManager {
 		}
 
 		const userID = sessionRow[0].user_id;
-		console.log('userID:', userID);
 		const user = await UserRepo.getUserByID(userID);
 		return user;
 	}
