@@ -1,4 +1,5 @@
 import sql from '$lib/DatabaseConnection';
+import type { ExerciseStat } from './ExerciseStat';
 
 export default class ExerciseStatRepo {
 	static async getExerciseStatsByUser(ID: string) {
