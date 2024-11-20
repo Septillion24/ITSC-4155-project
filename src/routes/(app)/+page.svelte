@@ -308,7 +308,7 @@
 			&::before {
 				background: radial-gradient(
 					800px circle at var(--mouse-x) var(--mouse-y),
-					rgba(255, 255, 255, 0.06),
+					rgba(255, 255, 255, 0.04),
 					transparent 40%
 				);
 				z-index: 3;
