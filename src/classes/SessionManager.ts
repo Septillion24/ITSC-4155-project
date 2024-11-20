@@ -8,11 +8,7 @@ import { GOOGLE_CLIENT_ID } from '$env/static/private';
 import { GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { GOOGLE_REDIRECT_URI } from '$env/static/private';
 import UserRepo from './UserRepo';
-
-export type Session = {
-	uuid: string;
-	memberID: string;
-};
+import type { Session } from './Session';
 
 export class SessionManager {
 	private static oAuth2Client: OAuth2Client;
