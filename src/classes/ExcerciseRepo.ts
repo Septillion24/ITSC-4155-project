@@ -1,11 +1,5 @@
 import sql from '$lib/DatabaseConnection';
-
-export type Exercise = {
-	ID: number;
-	name: string;
-	description: string;
-	videoURL: string | null;
-};
+import type { Exercise } from './Exercise';
 
 export default class ExerciseRepo {
 	static async getExercises(): Promise<Exercise[]> {

@@ -1,10 +1,5 @@
 import sql from '$lib/DatabaseConnection';
-
-export type MuscleGroup = {
-	ID: number;
-	name: string;
-	exerciseIDs: number[];
-};
+import type { MuscleGroup } from './MuscleGroup';
 
 export default class MuscleGroupRepo {
 	static async getMuscleGroups(): Promise<MuscleGroup[]> {
