@@ -1,15 +1,5 @@
 import sql from '$lib/DatabaseConnection';
 
-export type ExerciseStat = {
-	ID: number;
-	exerciseID: number;
-	userID: string;
-	date: Date;
-	sets: number;
-	reps: number;
-	weight: number[];
-};
-
 export default class ExerciseStatRepo {
 	static async getExerciseStatsByUser(ID: string) {
 		type ExcerciseStatFromDatabase = {
