@@ -81,9 +81,9 @@
 
 {#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="container" on:mousemove={onMouseMoveContainer}>
+	<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
 		<div class="card workouts">
-			<div class="card-content">
+			<div class="cardContent">
 				<div class="header-container">
 					<div class="header">WORKOUTS</div>
 					<button
@@ -143,7 +143,7 @@
 		</div>
 
 		<div class="card muscleGroups">
-			<div class="card-content">
+			<div class="cardContent">
 				<div class="header">MUSCLE GROUPS</div>
 				<div class="muscleGroupsContainer">
 					{#each muscleGroups as muscleGroup}
@@ -169,7 +169,7 @@
 		</div>
 
 		<div class="card workout-schedule">
-			<div class="card-content">
+			<div class="cardContent">
 				<h4>WORKOUT SCHEDULE</h4>
 				<div class="schedule-day">Sun 08</div>
 				<div class="schedule-day">Mon 09</div>
@@ -261,19 +261,7 @@
 </Modal>
 
 <style lang="scss">
-	.container {
-		font-family: sans-serif;
-		background-color: #202020;
-		color: rgb(228, 228, 228);
-		display: flex;
-		flex-wrap: wrap;
-		flex-direction: row;
-		margin: 0 auto;
-		min-height: 100%;
-		row-gap: 10px;
-		max-width: 916px;
-		width: calc(100% - 20px);
-		box-sizing: border-box;
+	.cardContainer {
 		&:hover {
 			.card::after {
 				opacity: 1;
@@ -323,7 +311,7 @@
 				z-index: 1;
 			}
 
-			> .card-content {
+			> .cardContent {
 				position: relative;
 				background-color: #222;
 				border-radius: inherit;
@@ -335,6 +323,21 @@
 				z-index: 2;
 			}
 		}
+	}
+	.container {
+		font-family: sans-serif;
+		background-color: #202020;
+		color: rgb(228, 228, 228);
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: row;
+		margin: 0 auto;
+		min-height: 100%;
+		row-gap: 10px;
+		max-width: 916px;
+		width: calc(100% - 20px);
+		box-sizing: border-box;
+
 		.workouts {
 			margin: 8px;
 			box-sizing: border-box;
@@ -500,7 +503,7 @@
 			box-sizing: border-box;
 			width: 100%;
 			border-radius: 10px;
-			.card-content {
+			.cardContent {
 				padding: 20px;
 			}
 			.schedule-day {
