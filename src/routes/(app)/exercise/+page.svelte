@@ -86,7 +86,17 @@
 			</div>
 			<div class=""></div>
 		</div>
-		<div class="rightContent"></div>
+		{#if !currentExercise.videoURL}
+			<!-- Change later, remove the ! -->
+			<div class="rightContent cardContainer">
+				<div class="card">
+					<div class="video cardContent">
+						<!-- svelte-ignore a11y-missing-attribute -->
+						<iframe width="640" height="360" src={currentExercise.videoURL} />
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
 {:else if !currentExercise && currentExerciseID}
 	<div>Exercise not found: {currentExerciseID}</div>
@@ -166,6 +176,9 @@
 		padding-left: 5%;
 		padding-right: 5%;
 		font-family: sans-serif;
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
 		.leftContent {
 			display: flex;
 			flex-direction: column;
