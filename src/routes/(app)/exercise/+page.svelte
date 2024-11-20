@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type Exercise from '../../../classes/Exercise';
 	import { page } from '$app/stores';
+	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 
 	let currentExercise: Exercise | undefined;
 	let allExercises: Exercise[];
@@ -15,13 +16,12 @@
 				'Content-Type': 'application/json'
 			}
 		}).then((res) => res.json());
-		allExerciseStats = await fetch('/api/get/exerciseStats', {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).then((res) => res.json());
-		console.log(allExercises);
+		// allExerciseStats = await fetch('/api/get/exerciseStats', {
+		// 	method: 'GET',
+		// 	headers: {
+		// 		'Content-Type': 'application/json'
+		// 	}
+		// }).then((res) => res.json());
 	});
 
 	$: hash = $page.url.hash.substring(1);
@@ -65,18 +65,22 @@
 				<div class="stats cardContent">
 					<div class="title">Stats</div>
 					<div>
-						{#each allExerciseStats.filter((stat) => {
-							return stat.exerciseID === currentExerciseID;
-						}) as workoutStat}
-							<div class="workoutStat">
-								<div class="numbers">
-									{workoutStat.sets}x{workoutStat.reps}
+						{#if allExerciseStats}
+							{#each allExerciseStats.filter((stat) => {
+								return stat.exerciseID === currentExerciseID;
+							}) as workoutStat}
+								<div class="workoutStat">
+									<div class="numbers">
+										{workoutStat.sets}x{workoutStat.reps}
+									</div>
+									<div class="date">
+										{workoutStat.date}
+									</div>
 								</div>
-								<div class="date">
-									{workoutStat.date}
-								</div>
-							</div>
-						{/each}
+							{/each}
+						{:else}
+							<LoadingGraphic />
+						{/if}
 					</div>
 				</div>
 			</div>
