@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import type Exercise from '../../../classes/Exercise';
 	import { page } from '$app/stores';
+	import type { ExerciseStat } from '../../../classes/ExerciseStat';
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 
 	let currentExercise: Exercise | undefined;
