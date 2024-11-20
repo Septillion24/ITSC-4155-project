@@ -7,7 +7,7 @@ export default class MuscleGroupRepo {
 			muscle_group_id: number;
 			name: string;
 			exercise_ids: number[];
-			user_id: number;
+			user_id: string;
 		};
 		const muscleGroupsFromDatabase = await sql<muscleGroupFromDatabase[]>`
             SELECT * FROM muscle_groups
@@ -28,7 +28,7 @@ export default class MuscleGroupRepo {
 			muscle_group_id: number;
 			name: string;
 			exercise_ids: number[];
-			user_id: number;
+			user_id: string;
 		};
 		const muscleGroupFromDatabase = await sql<muscleGroupFromDatabase[]>`
             SELECT * FROM muscle_groups WHERE muscle_group_id = ${muscleGroupID}
@@ -50,7 +50,7 @@ export default class MuscleGroupRepo {
 			muscle_group_id: number;
 			name: string;
 			exercise_ids: number[];
-			user_id: number;
+			user_id: string;
 		};
 		const muscleGroupFromDatabase = await sql<muscleGroupFromDatabase[]>`
             SELECT * FROM muscle_groups WHERE name = ${name}
@@ -75,7 +75,7 @@ export default class MuscleGroupRepo {
 
 	static async updateMuscleGroup(
 		muscleGroupID: number,
-		updates: { name?: string; exercise_ids?: number[]; user_id?: number }
+		updates: { name?: string; exercise_ids?: number[]; user_id?: string }
 	) {
 		if (!updates.name && !updates.exercise_ids && !updates.user_id) {
 			return;

@@ -6,7 +6,7 @@ export default class Exercise {
 	setWeights: number[];
 	workoutID: number | null;
 	muscleGroupID: number | null;
-	userID: number | null;
+	userID: string | null;
 
 	constructor(
 		exerciseID: number,
@@ -16,7 +16,7 @@ export default class Exercise {
 		setWeights: number[] = [],
 		workoutID: number | null = null,
 		muscleGroupID: number | null = null,
-		userID: number | null = null
+		userID: string | null = null
 	) {
 		this.exerciseID = exerciseID;
 		this.name = name;

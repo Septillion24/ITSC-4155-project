@@ -2,12 +2,12 @@ export default class MuscleGroup {
 	muscleGroupID: number;
 	name: string;
 	exerciseIDs: number[];
-	userID: number | null;
+	userID: string | null;
 	constructor(
 		muscleGroupID: number,
 		name: string,
 		exerciseIDs: number[],
-		userID: number | null = null
+		userID: string | null = null
 	) {
 		this.muscleGroupID = muscleGroupID;
 		this.name = name;
