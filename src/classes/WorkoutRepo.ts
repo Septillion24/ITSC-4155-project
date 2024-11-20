@@ -7,7 +7,7 @@ export default class WorkoutRepo {
 			workout_id: number;
 			name: string;
 			exercise_list: number[];
-			user_id: number;
+			user_id: string;
 		};
 		const workoutsFromDatabase = await sql<workoutFromDatabase[]>`SELECT * FROM workouts`;
 		return workoutsFromDatabase.map(
@@ -21,7 +21,7 @@ export default class WorkoutRepo {
 			workout_id: number;
 			name: string;
 			exercise_list: number[];
-			user_id: number;
+			user_id: string;
 		};
 		const workoutFromDatabase = await sql<workoutFromDatabase[]>`
             SELECT * FROM workouts WHERE workout_id = ${workoutID}
@@ -49,7 +49,7 @@ export default class WorkoutRepo {
 		return new Workout(workout.workout_id, workout.name, workout.exercise_list);
 	}
 
-	static async addWorkout(name: string, exercise_list: number[], user_id: number) {
+	static async addWorkout(name: string, exercise_list: number[], user_id: string) {
 		const row =
 			await sql`INSERT INTO workouts (name, exercise_list, user_id) VALUES (${name}, ${exercise_list}, ${user_id}) returning workout_id`;
 		const workoutID = row[0].workout_id;

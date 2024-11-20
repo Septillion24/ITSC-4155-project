@@ -36,4 +36,22 @@ export default class UserRepo {
 		const userID = row[0].user_id;
 		return new User(userID, username, email, first_name, last_name);
 	}
+
+	static async updateUser(
+		userID: string,
+		changes: {
+			username?: string;
+			email?: string;
+			first_name?: string;
+			last_name?: string;
+		}
+	): Promise<User> {
+		if (!changes.username && !changes.email && !changes.first_name && !changes.last_name) {
+			return await this.getUserByID(userID);
+		}
+		await sql`
+			UPDATE users SET ${sql(changes)} WHERE user_id = ${userID}
+		`;
+		return await this.getUserByID(userID);
+	}
 }

@@ -2,13 +2,13 @@ export default class Workout {
 	workoutId: number;
 	name: string;
 	exerciseList: number[];
-	userID: number | null;
+	userID: string | null;
 
 	constructor(
 		workoutId: number,
 		name: string,
 		exerciseList: number[] = [],
-		userID: number | null = null
+		userID: string | null = null
 	) {
 		this.workoutId = workoutId;
 		this.name = name;
