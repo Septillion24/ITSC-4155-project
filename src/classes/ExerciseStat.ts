@@ -1,9 +1,9 @@
 export type ExerciseStat = {
-	ID: number;
+	id: number;
 	exerciseID: number;
 	userID: string;
 	date: Date;
-	sets: number;
-	reps: number;
-	weight: number[];
+	sets: number | null;
+	reps: number | null;
+	weight: number[] | null;
 };

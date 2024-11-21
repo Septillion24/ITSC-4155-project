@@ -3,20 +3,20 @@ import type { UserWorkout } from './UserWorkout';
 
 export default class UserWorkoutRepo {
 	static async getUserWorkouts(userID: string): Promise<UserWorkout[]> {
-		type workoutFromDatabase = {
-			workout_id: number;
+		type WorkoutFromDatabase = {
+			id: number;
 			name: string;
 			exercise_list: number[];
 			user_id: string | null;
 		};
 		const workoutsFromDatabase = await sql<
-			workoutFromDatabase[]
+			WorkoutFromDatabase[]
 		>`SELECT * FROM user_workouts WHERE user_id = ${userID}`;
 		if (workoutsFromDatabase.length === 0) {
 			return [];
 		}
 		return workoutsFromDatabase.map((workout) => ({
-			ID: workout.workout_id,
+			id: workout.id,
 			name: workout.name,
 			exerciseList: workout.exercise_list,
 			userID: workout.user_id
@@ -53,7 +53,7 @@ export default class UserWorkoutRepo {
 		const row = await sql`
             INSERT INTO user_workouts (name, exercise_list, user_id)
             VALUES (${name}, ${sql.array(exerciseList)}, ${userID})
-            RETURNING workout_id
+            RETURNING id
         `;
 		return {
 			id: row[0].workout_id,

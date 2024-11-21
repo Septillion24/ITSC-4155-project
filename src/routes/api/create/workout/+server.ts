@@ -1,14 +1,21 @@
+import { SessionManager } from '../../../../classes/SessionManager.js';
 import WorkoutRepo from '../../../../classes/UserWorkoutRepo.js';
 
-export async function POST({ request }): Promise<Response> {
+export async function POST({ cookies, request }): Promise<Response> {
 	const requestJSON = await request.json();
 	if (requestJSON.name === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
+
+	const token = cookies.get('token');
+	if (!token) return new Response('Unauthorized', { status: 401 });
+	const userID = (await SessionManager.getUserFromUUID(token))?.id;
+	if (!userID) return new Response('Unauthorized', { status: 401 });
+
 	const workoutInfo = {
 		name: requestJSON.name,
 		exercise_ids: [],
-		user_id: requestJSON.userID
+		user_id: userID
 	};
 	try {
 		const workout = await WorkoutRepo.addWorkout(

@@ -1,5 +1,5 @@
 export type PredefinedWorkout = {
-	ID: number;
+	id: number;
 	name: string;
 	exerciseList: number[];
 };

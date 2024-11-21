@@ -1,5 +1,5 @@
 export type MuscleGroup = {
-	ID: number;
+	id: number;
 	name: string;
 	exerciseIDs: number[];
 };

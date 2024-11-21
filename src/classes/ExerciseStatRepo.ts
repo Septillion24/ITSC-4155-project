@@ -8,15 +8,15 @@ export default class ExerciseStatRepo {
 			exercise_id: number;
 			user_id: string;
 			date: Date;
-			sets: number;
-			reps: number;
-			weight: number[];
+			sets: number | null;
+			reps: number | null;
+			weight: number[] | null;
 		};
 		const exerciseStatsFromDatabase = await sql<ExcerciseStatFromDatabase[]>`
             SELECT * FROM exercise_stats WHERE user_id = ${ID}
         `;
 		return exerciseStatsFromDatabase.map((exerciseStat) => ({
-			ID: exerciseStat.exercise_stat_id,
+			id: exerciseStat.exercise_stat_id,
 			exerciseID: exerciseStat.exercise_id,
 			userID: exerciseStat.user_id,
 			date: exerciseStat.date,
@@ -30,9 +30,9 @@ export default class ExerciseStatRepo {
 		exerciseID: number;
 		userID: string;
 		date: Date;
-		sets: number;
-		reps: number;
-		weight: number[];
+		sets: number | null;
+		reps: number | null;
+		weight: number[] | null;
 	}): Promise<ExerciseStat> {
 		const row = await sql`
             INSERT INTO exercise_stats (
@@ -42,7 +42,7 @@ export default class ExerciseStatRepo {
             ) RETURNING exercise_stat_id
         `;
 		return {
-			ID: row[0].exercise_stat_id,
+			id: row[0].exercise_stat_id,
 			exerciseID: exerciseStatInfo.exerciseID,
 			userID: exerciseStatInfo.userID,
 			date: exerciseStatInfo.date,
@@ -57,9 +57,9 @@ export default class ExerciseStatRepo {
 			exerciseID?: number;
 			userID?: string;
 			date?: Date;
-			sets?: number;
-			reps?: number;
-			weight?: number[];
+			sets?: number | null;
+			reps?: number | null;
+			weight?: number[] | null;
 		}
 	) {
 		if (
@@ -82,9 +82,9 @@ export default class ExerciseStatRepo {
 			exercise_id: number;
 			user_id: string;
 			date: Date;
-			sets: number;
-			reps: number;
-			weight: number[];
+			sets: number | null;
+			reps: number | null;
+			weight: number[] | null;
 		};
 		const exerciseStatFromDatabase = await sql<ExerciseStatFromDatabase[]>`
 			SELECT * FROM exercise_stats WHERE exercise_stat_id = ${exerciseStatID}
@@ -94,7 +94,7 @@ export default class ExerciseStatRepo {
 		}
 		const exerciseStat = exerciseStatFromDatabase[0];
 		return {
-			ID: exerciseStat.exercise_stat_id,
+			id: exerciseStat.exercise_stat_id,
 			exerciseID: exerciseStat.exercise_id,
 			userID: exerciseStat.user_id,
 			date: exerciseStat.date,

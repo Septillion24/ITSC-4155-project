@@ -12,7 +12,7 @@ export default class MuscleGroupRepo {
 			muscleGroupFromDatabase[]
 		>`SELECT * FROM muscle_groups`;
 		return muscleGroupsFromDatabase.map((muscleGroup) => ({
-			ID: muscleGroup.muscle_group_id,
+			id: muscleGroup.muscle_group_id,
 			name: muscleGroup.name,
 			exerciseIDs: muscleGroup.exercise_ids
 		}));
@@ -32,7 +32,7 @@ export default class MuscleGroupRepo {
 		}
 		const muscleGroup = muscleGroupsFromDatabase[0];
 		return {
-			ID: muscleGroup.muscle_group_id,
+			id: muscleGroup.muscle_group_id,
 			name: muscleGroup.name,
 			exerciseIDs: muscleGroup.exercise_ids
 		};
@@ -52,7 +52,7 @@ export default class MuscleGroupRepo {
 		}
 		const muscleGroup = muscleGroupFromDatabase[0];
 		return {
-			ID: muscleGroup.muscle_group_id,
+			id: muscleGroup.muscle_group_id,
 			name: muscleGroup.name,
 			exerciseIDs: muscleGroup.exercise_ids
 		};
