@@ -4,11 +4,11 @@ import Workout from '../../../../classes/Workout.js';
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
 
-	if (requestJSON.workout_id === undefined) {
+	if (requestJSON.id === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
 
-	const workout: Workout | null = await WorkoutRepo.getWorkoutById(requestJSON.workout_id);
+	const workout: Workout | null = await WorkoutRepo.getUserWorkoutById(requestJSON.id);
 	if (workout === null) {
 		return new Response('Workout not found', { status: 404 });
 	}
