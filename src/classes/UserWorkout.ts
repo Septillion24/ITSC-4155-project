@@ -1,5 +1,5 @@
 export type UserWorkout = {
-	ID: number;
+	id: number;
 	name: string;
 	exerciseList: number[];
 	userID: string | null;

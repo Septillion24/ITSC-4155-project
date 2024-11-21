@@ -4,14 +4,14 @@
 	import { onMount } from 'svelte';
 	import type { Exercise } from '../../classes/Exercise';
 	import type { MuscleGroup } from '../../classes/MuscleGroup';
-	import type Workout from '../../classes/Workout';
+	import type { UserWorkout } from '../../classes/UserWorkout';
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 
 	let showAddNewExerciseModal = false;
 	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 
-	let workouts: Workout[] = [];
+	let workouts: UserWorkout[] = [];
 
 	let exercises: Exercise[] = [];
 
@@ -122,7 +122,7 @@
 							<button
 								class="addExcercise"
 								on:click={() => {
-									currentlyEditingWorkout = workout.workoutId;
+									currentlyEditingWorkout = workout.id;
 									showAddNewExerciseModal = true;
 								}}
 							>
