@@ -11,7 +11,6 @@
 	import clickOutside from 'svelte-outside-click';
 
 	let showAddNewExerciseModal = false;
-	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 	let showNewWorkoutPopout: boolean = false;
 
@@ -27,11 +26,8 @@
 	let newWorkoutName: string = '';
 	let currentlWaitingForWorkoutSubmission: boolean = false;
 
-	let exerciseName: string;
-	let muscleGroup: string = '';
-	let set: Number;
-	let lbs: Number[];
-	let reps: Number;
+	let currentFilterText: string = '';
+	let currentlySelectedExerciseIds: number[] = [];
 
 	let cookies: {
 		[key: string]: string;
@@ -55,23 +51,6 @@
 			})
 		});
 		return response;
-	}
-
-	async function submitNewExercise() {
-		const response = fetch('/api/create/exercise', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				name: exerciseName,
-				numberOfSets: set,
-				numberOfReps: reps,
-				setWeights: lbs,
-				workoutId: currentlyEditingWorkout,
-				userID: null //Needs userID once added
-			})
-		});
 	}
 
 	function getExerciseById(id: number) {
@@ -208,6 +187,19 @@
 		}
 	}
 
+	async function updateWorkout() {
+		const response = fetch('/api/delete/exerciseFromWorkout', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				id: currentlyEditingWorkout,
+				exerciseIDs: currentlySelectedExerciseIds
+			})
+		});
+	}
+
 	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
 		const response = fetch('/api/delete/exerciseFromWorkout', {
 			method: 'POST',
@@ -219,6 +211,10 @@
 				exerciseID: exerciseID
 			})
 		});
+	}
+
+	function getWorkoutFromId(id: number) {
+		return workouts.filter((w) => w.id === id)[0];
 	}
 
 	$: if (currentlyFilteredMuscleGroup) {
@@ -240,7 +236,20 @@
 		<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
 			<div class="card muscleGroups">
 				<div class="cardContent">
-					<div class="header">MUSCLE GROUPS</div>
+					<div class="header">
+						MUSCLE GROUPS
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							height="24px"
+							viewBox="0 -960 960 960"
+							width="24px"
+							fill="#5f6368"
+						>
+							<path
+								d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"
+							/>
+						</svg>
+					</div>
 					<div class="muscleGroupsContainer">
 						{#each muscleGroups as muscleGroup}
 							<button
@@ -447,69 +456,94 @@
 	</div>
 {/if}
 
-<!-- <Modal bind:showModal={showAddNewWorkoutsModal}>
-	<div class="modalContent">
-		<div class="label-input-container">
-			<label for="workout">Workouts</label>
-			<input
-				bind:value={workout}
-				type="text"
-				id="workout"
-				name="workout"
-				placeholder="Enter Workout"
-			/>
-			<button class="submit-button" on:click={submitNewWorkout}>Submit</button>
-		</div>
-	</div>
-</Modal> -->
-
 <Modal bind:showModal={showAddNewExerciseModal}>
-	<div class="modalContent">
-		<div class="label-input-container">
-			<label for="exercise-name">Exercise Name</label>
-			<input
-				bind:value={exerciseName}
-				type="text"
-				id="exercise-name"
-				name="exercise-name"
-				placeholder="Enter Exercise Name"
-			/>
+	{#if currentlyEditingWorkout}
+		<div class="modalContent">
+			<div class="title">
+				Add new exercise to <span>
+					{getWorkoutFromId(currentlyEditingWorkout).name}
+				</span>
+			</div>
+			<div class="exercises">
+				<div class="filter">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#5f6368"
+						><path
+							d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"
+						/></svg
+					>
+					<input placeholder="Type to filter..." bind:value={currentFilterText} />
+				</div>
+				{#if currentlySelectedExerciseIds.length > 0}
+					<div class="selectedExercisesList">
+						{#each currentlySelectedExerciseIds as selectedExerciseId}
+							<button
+								class="exercise"
+								on:click={() => {
+									currentlySelectedExerciseIds = currentlySelectedExerciseIds.filter(
+										(e) => e !== selectedExerciseId
+									);
+								}}
+							>
+								{getExerciseById(selectedExerciseId)?.name}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="24px"
+									viewBox="0 -960 960 960"
+									width="24px"
+									fill="#5f6368"
+									><path
+										d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+									/></svg
+								>
+							</button>
+						{/each}
+					</div>
+				{/if}
+				<div class="exerciseList {currentlySelectedExerciseIds.length > 0 ? '' : 'full'}">
+					{#each exercises
+						.filter((e) => e.name.toLowerCase().includes(currentFilterText.toLowerCase()))
+						.filter((e) => !currentlySelectedExerciseIds.includes(e.id))
+						.sort((a, b) => a.name.localeCompare(b.name)) as exercise (exercise.id)}
+						<button
+							class="exercise"
+							on:click={() => {
+								currentlySelectedExerciseIds = [...currentlySelectedExerciseIds, exercise.id];
+							}}
+						>
+							{exercise.name}
+						</button>
+					{/each}
+				</div>
+				<div class="buttons">
+					<button
+						class="confirm"
+						on:click={async () => {
+							await updateWorkout();
+							currentlySelectedExerciseIds = [];
+							currentFilterText = '';
+							showAddNewExerciseModal = false;
+						}}>Add</button
+					>
+					<button
+						class="deny"
+						on:click={() => {
+							currentlySelectedExerciseIds = [];
+							currentFilterText = '';
+							showAddNewExerciseModal = false;
+						}}>Cancel</button
+					>
+				</div>
+			</div>
 		</div>
-		<div class="label-input-container">
-			<label for="muscle-group">MuscleGroup</label>
-			<select bind:value={muscleGroup} id="muscle-group">
-				<option>Select</option>
-				<option>Chest</option>
-				<option>Back</option>
-				<option>Biceps</option>
-			</select>
-		</div>
-		<div class="set-details-container">
-			<label for="set">Set</label>
-			<input
-				bind:value={set}
-				type="number"
-				id="set"
-				name="set"
-				min="1"
-				step="1"
-				placeholder="Enter Set #"
-			/>
-			<label for="lbs">Lbs</label>
-			<input bind:value={lbs} type="number" id="lbs" name="lbs" min="0" placeholder="Enter Lbs" />
-			<label for="reps">Reps</label>
-			<input
-				bind:value={reps}
-				type="number"
-				id="reps"
-				name="reps"
-				min="1"
-				placeholder="Enter Reps"
-			/>
-		</div>
-		<button class="add-set-button">+ Add Set</button>
-		<button class="add-set-button" on:click={submitNewExercise}>Submit</button>
-	</div>
+	{:else}
+		{@const _ = showAddNewExerciseModal = showAddNewExerciseModal}
+		<div>howd you get here?</div>
+	{/if}
 </Modal>
 
 <style lang="scss">
@@ -804,6 +838,15 @@
 				padding-bottom: 5px;
 				width: 90%;
 				border-bottom: 1px solid #616161;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				gap: 1em;
+				justify-content: space-between;
+				svg {
+					height: 1.2em;
+					fill: white;
+				}
 			}
 			.muscleGroupsContainer {
 				width: 100%;
@@ -823,6 +866,7 @@
 					padding: 8px;
 					box-sizing: border-box;
 					text-align: center;
+					cursor: pointer;
 					&.active {
 						background-color: #576096;
 					}
@@ -963,55 +1007,133 @@
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
-		width: 500px;
-		.label-input-container {
-			display: flex;
-			flex-direction: column;
-			background-color: #444;
-			border-radius: 5px;
-			padding: 12px;
-			label {
-				color: #ddd;
-				font-size: 1rem;
-				margin-bottom: 5px;
-			}
-			input,
-			select {
-				padding: 8px;
-				border-radius: 5px;
-				font-size: 0.9rem;
-			}
-		}
-		.set-details-container {
-			background-color: #444;
-			border-radius: 5px;
-			padding: 10px;
-			display: flex;
-			gap: 10px;
-			input {
-				width: 100%;
-				border-radius: 5px;
-			}
-		}
-		.add-set-button {
-			padding: 10px;
-			background-color: #444;
-			color: #fff;
-			border: none;
-			border-radius: 5px;
-			cursor: pointer;
-			font-size: 1rem;
+		width: 40vw;
+		height: 50vh;
+		overflow: hidden;
+		.title {
+			width: 100%;
 			text-align: center;
+			color: white;
+			font-size: 1.4em;
+			padding-top: 20px;
+			padding-top: 20px;
+			span {
+				color: rgb(158, 158, 252);
+			}
 		}
-		.submit-button {
-			margin-top: 10px;
-			padding: 10px;
-			border: none;
-			border-radius: 5px;
-			background-color: #5f6368;
-			color: #fff;
-			cursor: pointer;
-			font-size: 1rem;
+		.exercises {
+			.filter {
+				position: relative;
+				display: flex;
+				align-items: center;
+				margin-left: 1em;
+				svg {
+					position: absolute;
+					left: 0;
+					width: 2em;
+					height: auto;
+					padding: 0.1em;
+					box-sizing: border-box;
+					fill: rgb(255, 255, 255);
+				}
+				input {
+					padding-left: 1.5em !important;
+					width: 45%;
+					padding: 6px;
+					font-size: 1.3em;
+					color: white;
+					background-color: rgb(211, 222, 255);
+					border: none;
+					&::placeholder {
+						color: rgb(105, 105, 105);
+					}
+					&:focus::placeholder {
+						color: white;
+					}
+					&:focus {
+						outline: none;
+						background-color: #a8b1e6;
+					}
+				}
+			}
+
+			// .selectedExercisesList {
+			// 	max-height: 20vh;
+			// 	display: flex;
+			// 	flex-direction: row;
+			// 	flex-wrap: wrap;
+			// 	overflow-y: auto;
+			// 	border-bottom: 2px solid white;
+			// }
+			.exerciseList,
+			.selectedExercisesList {
+				max-height: 20vh;
+				overflow-y: auto;
+				overflow-x: visible;
+				position: relative;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				gap: 10px;
+				padding-top: 20px;
+				&.full {
+					max-height: 40vh;
+				}
+				.exercise {
+					font-size: 1.05em;
+					min-width: fit-content;
+					max-width: calc(50% - 10px);
+					padding: 5px;
+					background-color: #576096;
+					border-radius: 5px;
+					border: none;
+					color: white;
+					cursor: pointer;
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					svg {
+						height: 1.3em;
+						width: auto;
+						fill: white;
+					}
+				}
+			}
+			.selectedExercisesList {
+				border-bottom: 2px solid white;
+				padding-bottom: 20px;
+			}
+			.buttons {
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 20px;
+
+				margin-top: 15px;
+				button {
+					color: white;
+					border: none;
+					font-size: 1.2em;
+					padding: 7px;
+					border-radius: 5px;
+					width: 4em;
+					cursor: pointer;
+				}
+				.confirm {
+					background-color: rgb(136, 177, 224);
+					&:hover {
+						background-color: rgb(182, 204, 231);
+					}
+				}
+				.deny {
+					background-color: gray;
+					&:hover {
+						background-color: rgb(182, 182, 182);
+					}
+				}
+			}
 		}
 	}
 	@keyframes wiggle {
