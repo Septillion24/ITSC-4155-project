@@ -23,7 +23,7 @@ export default class UserWorkoutRepo {
 		}));
 	}
 
-	static async getUserWorkoutById(workoutID: number): Promise<UserWorkout | null> {
+	static async getUserWorkoutById(id: number): Promise<UserWorkout | null> {
 		type UserWorkoutFromDatabase = {
 			id: number;
 			name: string;
@@ -31,7 +31,7 @@ export default class UserWorkoutRepo {
 			user_id: string | null;
 		};
 		const workoutsFromDatabase = await sql<UserWorkoutFromDatabase[]>`
-            SELECT * FROM user_workouts WHERE id = ${workoutID}
+            SELECT * FROM user_workouts WHERE id = ${id}
         `;
 		if (workoutsFromDatabase.length === 0) {
 			return null;

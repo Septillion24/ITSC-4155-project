@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import ExerciseRepo from './classes/ExcerciseRepo';
 import ExerciseStatRepo from './classes/ExerciseStatRepo';
 import { DateTime } from '@auth/core/providers/kakao';
+import UserWorkoutRepo from './classes/UserWorkoutRepo';
 describe('sum test', () => {
 	it('adds 1 + 2 to equal 3', () => {
 		expect(1 + 2).toBe(3);
@@ -41,12 +42,16 @@ describe('exercise stats tests', () => {
 
 describe('user workouts', () => {
 	it('gets userworout by id', async () => {
-		const exercise = await ExerciseRepo.getExerciseByid(13);
-		expect(exercise?.name).toBe('Lat Pulldown');
+		const exercise = await UserWorkoutRepo.getUserWorkoutById(15);
+		console.log(exercise);
+		expect(exercise?.id).toBe(15);
+		expect(exercise?.name).toBe('jawn');
+		expect(exercise?.exerciseList).toEqual([]);
+		expect(exercise?.userID).toBe('102076183365937191708');
 	});
 	it('gets all excercises', async () => {
 		const exercises = await ExerciseRepo.getExercises();
-		expect(exercises.length).toBe(41);
+		expect(exercises.length).toBe(31);
 	});
 });
 
