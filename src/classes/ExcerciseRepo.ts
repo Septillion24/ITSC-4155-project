@@ -11,14 +11,14 @@ export default class ExerciseRepo {
 		};
 		const exercisesFromDatabase = await sql<exerciseFromDatabase[]>`SELECT * FROM exercises`;
 		return exercisesFromDatabase.map((exercise) => ({
-			ID: exercise.exercise_id,
+			id: exercise.exercise_id,
 			name: exercise.name,
 			description: exercise.description,
 			videoURL: exercise.video_url
 		}));
 	}
 
-	static async getExerciseByID(ID: number): Promise<Exercise | null> {
+	static async getExerciseByid(id: number): Promise<Exercise | null> {
 		type exerciseFromDatabase = {
 			exercise_id: number;
 			name: string;
@@ -26,14 +26,14 @@ export default class ExerciseRepo {
 			video_url: string | null;
 		};
 		const exercisesFromDatabase = await sql<exerciseFromDatabase[]>`
-            SELECT * FROM exercises WHERE exercise_id = ${ID}
+            SELECT * FROM exercises WHERE exercise_id = ${id}
         `;
 		if (exercisesFromDatabase.length === 0) {
 			return null;
 		}
 		const exercise = exercisesFromDatabase[0];
 		return {
-			ID: exercise.exercise_id,
+			id: exercise.exercise_id,
 			name: exercise.name,
 			description: exercise.description,
 			videoURL: exercise.video_url
@@ -55,7 +55,7 @@ export default class ExerciseRepo {
 		const exercise_id = row[0].exercise_id;
 
 		return {
-			ID: exercise_id,
+			id: exercise_id,
 			name: exerciseInfo.name,
 			description: exerciseInfo.description,
 			videoURL: exerciseInfo.videoURL ?? null

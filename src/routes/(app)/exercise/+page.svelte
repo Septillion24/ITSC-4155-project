@@ -29,8 +29,9 @@
 	$: if (hash !== '' && allExercises) {
 		currentExerciseID = parseInt(hash);
 		currentExercise = allExercises.find((e) => {
-			return e.exerciseID === currentExerciseID;
+			return e.id === currentExerciseID;
 		});
+		console.log(allExercises);
 	}
 
 	// $: if (hash) {
@@ -87,8 +88,7 @@
 			</div>
 			<div class=""></div>
 		</div>
-		{#if !currentExercise.videoURL}
-			<!-- Change later, remove the ! -->
+		{#if currentExercise.videoURL}
 			<div class="rightContent cardContainer">
 				<div class="card">
 					<div class="video cardContent">

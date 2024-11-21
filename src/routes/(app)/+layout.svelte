@@ -1,8 +1,38 @@
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import type { User } from '../../classes/User';
+
+	let currentUser: User | undefined;
+	onMount(async () => {
+		currentUser = await fetch('/api/get/user', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((res) => res.json());
+	});
+</script>
+
 <div class="wrapper">
 	<main>
 		<header>
-			<img src="banner.png" alt="banner" />
-			<a href="/login"> Login </a>
+			<div class="logo">
+				<img src="banner.png" alt="banner" />
+			</div>
+			<div class="navButtons">
+				<a href="/"> Home </a>
+				<a href="/exercise"> Exercises </a>
+				<a href="/login"> Login </a>
+			</div>
+			<div class="profile">
+				{#if currentUser}
+					<div>
+						{currentUser.first_name}
+					</div>
+				{:else}
+					<a href="/login"> Login </a>
+				{/if}
+			</div>
 		</header>
 		<slot />
 	</main>
@@ -27,10 +57,39 @@
 
 		header {
 			text-align: center;
-			background-color: black;
 			margin: 0;
 			padding: 0;
 			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			.logo {
+				width: 19vw;
+				img {
+					width: 100%;
+					height: auto;
+					max-height: 200px;
+				}
+			}
+			.navButtons {
+				font-size: 1.3em;
+				width: 60vw;
+				display: flex;
+				justify-content: space-around;
+				a {
+					padding: 8px;
+					color: white;
+					text-decoration: none;
+					font-family: sans-serif;
+					background-color: #434452;
+					border-radius: 12px;
+					margin-top: auto;
+					margin-bottom: auto;
+					border: 1px solid #9699a8;
+				}
+			}
+			.profile {
+				width: 19vw;
+			}
 		}
 
 		header img {

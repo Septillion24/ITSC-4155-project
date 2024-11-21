@@ -1,5 +1,5 @@
 export type Exercise = {
-	ID: number;
+	id: number;
 	name: string;
 	description: string;
 	videoURL: string | null;
