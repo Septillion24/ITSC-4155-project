@@ -87,11 +87,11 @@ describe('user workouts', () => {
 		expect(workout?.exerciseList).toEqual([1, 2, 5]);
 		expect(workout?.userID).toBe('15');
 	});
-	it('adds workout', async () => {
-		const workout = await UserWorkoutRepo.addWorkout('jawn', [1, 2, 3], '14');
-		expect(workout.name).toBe('jawn');
-		expect(workout.exerciseList).toEqual([1, 2, 3]);
-		expect(workout.userID).toBe('14');
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(3, {
+			name: undefined
+		});
+		expect(workout).toBe(null);
 	});
 });
 
