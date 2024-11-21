@@ -8,9 +8,9 @@ export default class ExerciseStatRepo {
 			exercise_id: number;
 			user_id: string;
 			date: Date;
-			sets: number;
-			reps: number;
-			weight: number[];
+			sets: number | null;
+			reps: number | null;
+			weight: number[] | null;
 		};
 		const exerciseStatsFromDatabase = await sql<ExcerciseStatFromDatabase[]>`
             SELECT * FROM exercise_stats WHERE user_id = ${ID}
@@ -30,9 +30,9 @@ export default class ExerciseStatRepo {
 		exerciseID: number;
 		userID: string;
 		date: Date;
-		sets: number;
-		reps: number;
-		weight: number[];
+		sets: number | null;
+		reps: number | null;
+		weight: number[] | null;
 	}): Promise<ExerciseStat> {
 		const row = await sql`
             INSERT INTO exercise_stats (
@@ -57,9 +57,9 @@ export default class ExerciseStatRepo {
 			exerciseID?: number;
 			userID?: string;
 			date?: Date;
-			sets?: number;
-			reps?: number;
-			weight?: number[];
+			sets?: number | null;
+			reps?: number | null;
+			weight?: number[] | null;
 		}
 	) {
 		if (
@@ -82,9 +82,9 @@ export default class ExerciseStatRepo {
 			exercise_id: number;
 			user_id: string;
 			date: Date;
-			sets: number;
-			reps: number;
-			weight: number[];
+			sets: number | null;
+			reps: number | null;
+			weight: number[] | null;
 		};
 		const exerciseStatFromDatabase = await sql<ExerciseStatFromDatabase[]>`
 			SELECT * FROM exercise_stats WHERE exercise_stat_id = ${exerciseStatID}
