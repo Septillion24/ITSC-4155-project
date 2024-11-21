@@ -25,7 +25,7 @@ export default class UserWorkoutRepo {
 
 	static async getUserWorkoutById(workoutID: number): Promise<UserWorkout | null> {
 		type UserWorkoutFromDatabase = {
-			workout_id: number;
+			id: number;
 			name: string;
 			exercise_list: number[];
 			user_id: string | null;
@@ -38,7 +38,7 @@ export default class UserWorkoutRepo {
 		}
 		const workout = workoutsFromDatabase[0];
 		return {
-			id: workout.workout_id,
+			id: workout.id,
 			name: workout.name,
 			exerciseList: workout.exercise_list,
 			userID: workout.user_id
@@ -56,7 +56,7 @@ export default class UserWorkoutRepo {
             RETURNING id
         `;
 		return {
-			id: row[0].workout_id,
+			id: row[0].id,
 			name,
 			exerciseList,
 			userID
