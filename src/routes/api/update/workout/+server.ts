@@ -6,7 +6,6 @@ export async function POST({ request }): Promise<Response> {
 	if (requestJSON.id === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
-
 	const workout = await WorkoutRepo.updateWorkout(requestJSON.id, {
 		exerciseList: requestJSON.exerciseIDs
 	});

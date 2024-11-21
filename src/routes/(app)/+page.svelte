@@ -188,7 +188,7 @@
 	}
 
 	async function updateWorkout() {
-		const response = fetch('/api/delete/exerciseFromWorkout', {
+		const response = fetch('/api/update/workout', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'

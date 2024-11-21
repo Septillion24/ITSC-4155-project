@@ -3,9 +3,11 @@ import WorkoutRepo from '../../../../classes/UserWorkoutRepo.js';
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
 
-	if (requestJSON.id === undefined) return new Response('Bad Request', { status: 400 });
+	if (requestJSON.workoutID === undefined) return new Response('Bad Request', { status: 400 });
 
 	const workout = await WorkoutRepo.getUserWorkoutById(requestJSON.workoutID);
+	console.log(requestJSON.workoutID);
+	console.log(workout);
 	if (!workout) return new Response('Bad Request', { status: 400 });
 
 	try {
