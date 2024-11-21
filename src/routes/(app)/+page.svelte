@@ -7,10 +7,13 @@
 	import type { UserWorkout } from '../../classes/UserWorkout';
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 	import type { ExerciseStat } from '../../classes/ExerciseStat';
+	// @ts-ignore
+	import clickOutside from 'svelte-outside-click';
 
 	let showAddNewExerciseModal = false;
 	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
+	let showNewWorkoutPopout: boolean = false;
 
 	let workouts: UserWorkout[] = [];
 	let exercises: Exercise[] = [];
@@ -19,12 +22,13 @@
 
 	let currentlyFilteredWorkoutIDs: number[] = [];
 	let currentlyFilteredExerciseIDs: number[] = [];
-
 	let currentlyFilteredMuscleGroup: number | undefined = undefined;
 
-	let workout: String = '';
-	let exerciseName: String;
-	let muscleGroup: String = '';
+	let newWorkoutName: string = '';
+	let currentlWaitingForWorkoutSubmission: boolean = false;
+
+	let exerciseName: string;
+	let muscleGroup: string = '';
 	let set: Number;
 	let lbs: Number[];
 	let reps: Number;
@@ -38,8 +42,6 @@
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
 		allExerciseStats = await (await fetch('/api/get/exerciseStats')).json();
-		console.log(workouts);
-		console.log(exercises);
 	});
 
 	async function submitNewWorkout() {
@@ -49,9 +51,10 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				name: workout
+				name: newWorkoutName
 			})
 		});
+		return response;
 	}
 
 	async function submitNewExercise() {
@@ -101,7 +104,6 @@
 	}
 
 	function getCookie(cookie: string): string | undefined {
-		console.log(cookies);
 		if (cookies) {
 			return cookies[cookie];
 		} else {
@@ -196,6 +198,15 @@
 		return count;
 	}
 
+	async function handleAddNewWorkout() {
+		currentlWaitingForWorkoutSubmission = true;
+		const response = await submitNewWorkout();
+		currentlWaitingForWorkoutSubmission = false;
+		if (response.ok) {
+			workouts = [...workouts, (await response.json()) as UserWorkout];
+		}
+	}
+
 	$: if (currentlyFilteredMuscleGroup) {
 		currentlyFilteredExerciseIDs = getCurrentlyFilteredExerciseIDsByMuscleGroupID(
 			currentlyFilteredMuscleGroup
@@ -220,7 +231,7 @@
 						{#each muscleGroups as muscleGroup}
 							<button
 								on:click={() => {
-									if (!currentlyFilteredMuscleGroup) {
+									if (currentlyFilteredMuscleGroup !== muscleGroup.id) {
 										currentlyFilteredMuscleGroup = muscleGroup.id;
 									} else {
 										currentlyFilteredMuscleGroup = undefined;
@@ -241,23 +252,68 @@
 				<div class="cardContent">
 					<div class="header-container">
 						<div class="header">WORKOUTS</div>
-						<button
-							class="add-workout-button"
-							on:click={() => {
-								showAddNewWorkoutsModal = true;
-							}}
-						>
-							<div class="addText">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									height="24px"
-									viewBox="0 -960 960 960"
-									width="24px"
-									fill="#5f6368"
-									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+						<div class="addNewWorkout">
+							<button
+								class="add-workout-button"
+								style={showNewWorkoutPopout ? 'visibility:hidden;' : ''}
+								on:click={(e) => {
+									showNewWorkoutPopout = !showNewWorkoutPopout;
+									e.stopPropagation();
+									console.log(showNewWorkoutPopout);
+								}}
+							>
+								<div class="addText">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										height="24px"
+										viewBox="0 -960 960 960"
+										width="24px"
+										fill="#5f6368"
+										><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+									>
+								</div>
+							</button>
+
+							{#if showNewWorkoutPopout}
+								<div
+									class="popout"
+									use:clickOutside={() => {
+										showNewWorkoutPopout = false;
+										console.log('closing!!');
+									}}
 								>
-							</div>
-						</button>
+									<!-- svelte-ignore a11y-autofocus -->
+									<input
+										placeholder="Name your new workout..."
+										autofocus
+										bind:value={newWorkoutName}
+										on:keydown={async (e) => {
+											if (e.key === 'Enter') {
+												await handleAddNewWorkout();
+												showNewWorkoutPopout = false;
+											}
+										}}
+									/>
+									{#if !currentlWaitingForWorkoutSubmission}
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											height="24px"
+											viewBox="0 -960 960 960"
+											width="24px"
+											fill="#5f6368"
+										>
+											<path
+												d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"
+											/>
+										</svg>
+									{:else}
+										<div class="loading">
+											<LoadingGraphic />
+										</div>
+									{/if}
+								</div>
+							{/if}
+						</div>
 					</div>
 					{#each workouts as workout}
 						{#if currentlyFilteredMuscleGroup === undefined || currentlyFilteredWorkoutIDs.includes(workout.id)}
@@ -273,7 +329,6 @@
 								<div class="workoutContent">
 									{#each workout.exerciseList as excerciseID}
 										{@const exercise = getExerciseById(excerciseID)}
-										{@const jawn = console.log(exercise)}
 										{#if exercise !== null}
 											<div class="excercise">
 												<button class="delete">
@@ -366,7 +421,7 @@
 	</div>
 {/if}
 
-<Modal bind:showModal={showAddNewWorkoutsModal}>
+<!-- <Modal bind:showModal={showAddNewWorkoutsModal}>
 	<div class="modalContent">
 		<div class="label-input-container">
 			<label for="workout">Workouts</label>
@@ -380,7 +435,7 @@
 			<button class="submit-button" on:click={submitNewWorkout}>Submit</button>
 		</div>
 	</div>
-</Modal>
+</Modal> -->
 
 <Modal bind:showModal={showAddNewExerciseModal}>
 	<div class="modalContent">
@@ -527,16 +582,62 @@
 				padding-bottom: 5px;
 				width: 100%;
 			}
-			.add-workout-button {
-				background-color: transparent;
-				color: #888;
-				border: none;
-				font-size: 1.5em;
-				cursor: pointer;
-				display: flex;
-				align-items: center;
-				justify-content: center;
+			.addNewWorkout {
+				position: relative;
+				.add-workout-button {
+					background-color: transparent;
+					color: #888;
+					border: none;
+					font-size: 1.5em;
+					cursor: pointer;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+				.popout {
+					position: absolute;
+					bottom: 0;
+					right: 0;
+					// transform: translateX(-100%);
+					// width: 6em;
+					// box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+					// display: flex;
+					// flex-direction: row;
+					svg,
+					.loading {
+						position: absolute;
+						right: 0;
+						height: 100%;
+						width: auto;
+						padding: 0.2em;
+						box-sizing: border-box;
+					}
+					input {
+						background-color: transparent;
+						padding: 5px;
+						font-size: 1.3em;
+						color: white;
+						border: none;
+						border-bottom: 2px solid gray;
+						&::placeholder {
+							color: rgb(179, 179, 179);
+							font-style: italic;
+							font-size: 0.9em;
+						}
+						&:focus {
+							outline: none;
+							background: rgb(2, 0, 36);
+							background: linear-gradient(
+								0deg,
+								rgba(2, 0, 36, 1) 0%,
+								rgba(0, 12, 69, 0.5) 0%,
+								rgba(0, 12, 69, 0) 100%
+							);
+						}
+					}
+				}
 			}
+
 			.empty {
 				margin-top: 20px;
 				width: 100%;

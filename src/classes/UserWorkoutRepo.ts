@@ -16,7 +16,7 @@ export default class UserWorkoutRepo {
 			return [];
 		}
 		return workoutsFromDatabase.map((workout) => ({
-			ID: workout.workout_id,
+			id: workout.workout_id,
 			name: workout.name,
 			exerciseList: workout.exercise_list,
 			userID: workout.user_id
@@ -53,7 +53,7 @@ export default class UserWorkoutRepo {
 		const row = await sql`
             INSERT INTO user_workouts (name, exercise_list, user_id)
             VALUES (${name}, ${sql.array(exerciseList)}, ${userID})
-            RETURNING workout_id
+            RETURNING id
         `;
 		return {
 			id: row[0].workout_id,

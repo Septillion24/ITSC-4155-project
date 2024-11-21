@@ -7,7 +7,7 @@ export async function POST({ request }): Promise<Response> {
 		return new Response('Bad Request', { status: 400 });
 	}
 
-	const exercise: Exercise | null = await ExerciseRepo.getExerciseByID(requestJSON.excerciseID);
+	const exercise: Exercise | null = await ExerciseRepo.getExerciseByid(requestJSON.excerciseID);
 	if (exercise === null) {
 		return new Response('Exercise not found', { status: 404 });
 	}
