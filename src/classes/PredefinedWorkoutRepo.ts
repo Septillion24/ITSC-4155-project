@@ -1,5 +1,5 @@
 import sql from '$lib/DatabaseConnection';
-
+import type { PredefinedWorkout } from './PredefinedWorkout';
 export default class UserWorkoutRepo {
 	static async getPredefinedWorkout(): Promise<PredefinedWorkout[]> {
 		type WorkoutFromDatabase = {
