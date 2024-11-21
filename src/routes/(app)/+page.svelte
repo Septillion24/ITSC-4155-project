@@ -685,6 +685,7 @@
 					display: flex;
 					flex-direction: row;
 					.delete {
+						cursor: pointer;
 						position: absolute;
 						left: 0;
 						top: 0;
