@@ -93,6 +93,12 @@ describe('user workouts', () => {
 		});
 		expect(workout).toBe(null);
 	});
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(undefined, {
+			name: undefined
+		});
+		expect(workout).toBe(null);
+	});
 });
 
 // describe('name', () => {
