@@ -85,6 +85,6 @@ export default class UserWorkoutRepo {
 	}
 
 	static async addExerciseToWorkout(workoutID: number, exerciseID: number) {
-		await sql`UPDATE user_workouts SET exercise_list = array_append(exercise_list, ${exerciseID}) WHERE workout_id=${workoutID}`;
+		await sql`UPDATE user_workouts SET exercise_list = array_append(exercise_list, ${exerciseID}) WHERE id=${workoutID}`;
 	}
 }
