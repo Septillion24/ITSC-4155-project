@@ -203,6 +203,7 @@
 		const response = await submitNewWorkout();
 		currentlWaitingForWorkoutSubmission = false;
 		if (response.ok) {
+			newWorkoutName = '';
 			workouts = [...workouts, (await response.json()) as UserWorkout];
 		}
 	}
@@ -292,7 +293,6 @@
 									class="popout"
 									use:clickOutside={() => {
 										showNewWorkoutPopout = false;
-										console.log('closing!!');
 									}}
 								>
 									<!-- svelte-ignore a11y-autofocus -->
@@ -340,9 +340,9 @@
 										) + ' / '
 									: ''}{workout.exerciseList.length}"
 								on:delete={() => {
-									workouts = workouts.filter((w) => {
-										w.id === workout.id;
-									});
+									workouts = workouts.filter((w) => w.id !== workout.id);
+									console.log('New workouts content:');
+									console.log(workouts);
 								}}
 							>
 								<div class="workoutContent">
@@ -428,6 +428,10 @@
 			</div>
 		</div>
 	{:else}
+		{@const jaw2n = console.log('Loading, waiting for:')}
+		{@const jawn = console.log(exercises)}
+		{@const jawn2 = console.log(workouts)}
+		{@const jawn3 = console.log(allExerciseStats)}
 		<LoadingGraphic />
 	{/if}
 {:else if cookies}
