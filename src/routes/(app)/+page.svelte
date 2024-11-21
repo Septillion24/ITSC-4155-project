@@ -236,7 +236,9 @@
 					<div class="schedule">
 						{#each getAllExerciseDays(allExerciseStats) as day, i}
 							<div class="day {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
-								{getDayNameFromNumber(i)}
+								<div class="dayName unselectable">
+									{getDayNameFromNumber(i)}
+								</div>
 							</div>
 						{/each}
 					</div>
@@ -591,6 +593,13 @@
 					&.today {
 						background-color: rgba(0, 26, 255, 0.08);
 					}
+					.dayName {
+						color: rgba(255, 255, 255, 0.623);
+						font-size: 0.8em;
+						width: 100%;
+						text-align: center;
+						padding-top: 0.4em;
+					}
 				}
 			}
 		}
@@ -707,5 +716,14 @@
 				}
 			}
 		}
+	}
+
+	.unselectable {
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 	}
 </style>
