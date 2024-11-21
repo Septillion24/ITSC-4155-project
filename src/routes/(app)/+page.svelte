@@ -228,6 +228,10 @@
 			currentlyFilteredMuscleGroup
 		);
 	}
+
+	$: if (!currentlyFilteredMuscleGroup) currentlyFilteredExerciseIDs = [];
+
+	$: console.log(currentlyFilteredExerciseIDs);
 </script>
 
 {#if cookies && getCookie('token')}
@@ -282,7 +286,6 @@
 								on:click={(e) => {
 									showNewWorkoutPopout = !showNewWorkoutPopout;
 									e.stopPropagation();
-									console.log(showNewWorkoutPopout);
 								}}
 							>
 								<div class="addText">
@@ -350,15 +353,18 @@
 									: ''}{workout.exerciseList.length}"
 								on:delete={() => {
 									workouts = workouts.filter((w) => w.id !== workout.id);
-									console.log('New workouts content:');
-									console.log(workouts);
 								}}
 							>
 								<div class="workoutContent">
 									{#each workout.exerciseList as excerciseID}
 										{@const exercise = getExerciseById(excerciseID)}
 										{#if exercise !== null}
-											<div class="excercise">
+											<div
+												class="excercise {!currentlyFilteredExerciseIDs.includes(excerciseID) &&
+												currentlyFilteredExerciseIDs.length > 0
+													? 'inactive'
+													: ''}"
+											>
 												<button
 													class="delete"
 													on:click={() => handleRemoveExerciseFromWorkout(workout.id, excerciseID)}
@@ -437,10 +443,6 @@
 			</div>
 		</div>
 	{:else}
-		{@const jaw2n = console.log('Loading, waiting for:')}
-		{@const jawn = console.log(exercises)}
-		{@const jawn2 = console.log(workouts)}
-		{@const jawn3 = console.log(allExerciseStats)}
 		<LoadingGraphic />
 	{/if}
 {:else if cookies}
@@ -740,10 +742,15 @@
 				}
 				.excercise {
 					position: relative;
+					color: white;
 					background-color: #666;
 					padding-left: 2.3em;
 					display: flex;
 					flex-direction: row;
+					&.inactive {
+						background-color: #313131;
+						color: rgb(204, 204, 204);
+					}
 					.delete {
 						cursor: pointer;
 						position: absolute;
