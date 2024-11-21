@@ -517,6 +517,12 @@
 							background-color: rgb(190, 0, 0);
 							border-top-right-radius: 10px;
 							border-bottom-right-radius: 10px;
+							svg {
+								transition: 300ms;
+								height: 100%;
+								min-width: 1.5em;
+								fill: rgb(255, 216, 216);
+							}
 						}
 
 						svg {
@@ -525,12 +531,13 @@
 							fill: rgb(252, 252, 252);
 						}
 						.text {
+							align-items: center;
 							font-size: 1.3em;
 							display: flex;
-							margin-left: 1.8em;
+							margin-left: 1em;
 							height: 100%;
 							text-align: left;
-							width: calc(100% / (1 / 20));
+							width: calc(100% / 0.05);
 							align-items: center;
 							color: white;
 						}
