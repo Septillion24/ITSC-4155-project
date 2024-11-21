@@ -22,7 +22,7 @@
 			<div class="navButtons">
 				<a href="/"> Home </a>
 				<a href="/exercise"> Exercises </a>
-				<a href="/login"> Login </a>
+				<!-- <a href="/login"> Login </a> -->
 			</div>
 			<div class="profile">
 				{#if currentUser}
@@ -62,6 +62,12 @@
 			width: 100%;
 			display: flex;
 			justify-content: space-between;
+			background: linear-gradient(
+				180deg,
+				rgba(2, 0, 36, 1) 0%,
+				rgba(0, 0, 0, 0.5) 0%,
+				rgba(0, 0, 0, 0) 100%
+			);
 			.logo {
 				width: 19vw;
 				img {
@@ -85,10 +91,32 @@
 					margin-top: auto;
 					margin-bottom: auto;
 					border: 1px solid #9699a8;
+					&:hover {
+						text-decoration: underline;
+						background-color: #7e809b;
+					}
 				}
 			}
 			.profile {
+				font-size: 1.3em;
+				display: flex;
+				justify-content: center;
 				width: 19vw;
+				a {
+					padding: 8px;
+					color: white;
+					text-decoration: none;
+					font-family: sans-serif;
+					background-color: #555dc9;
+					border-radius: 12px;
+					margin-top: auto;
+					margin-bottom: auto;
+					border: 1px solid #7f8fdd;
+					&:hover {
+						text-decoration: underline;
+						background-color: #6c73d6;
+					}
+				}
 			}
 		}
 

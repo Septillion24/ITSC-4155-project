@@ -24,6 +24,10 @@
 	let lbs: Number[];
 	let reps: Number;
 
+	let cookies: {
+		[key: string]: string;
+	};
+
 	onMount(async () => {
 		exercises = await (await fetch('/api/get/exercises')).json();
 		workouts = await (await fetch('/api/get/workouts')).json();
@@ -80,107 +84,136 @@
 			(card as HTMLDivElement).style.setProperty('--mouse-y', `${y}px`);
 		}
 	}
+
+	$: if (typeof window !== 'undefined') {
+		cookies = document.cookie.split(';').reduce((acc, cookie) => {
+			const [key, value] = cookie.split('=').map((item) => item.trim());
+			// @ts-ignore
+			acc[key] = value;
+			return acc;
+		}, {});
+	}
+
+	function getCookie(cookie: string): string | undefined {
+		console.log(cookies);
+		if (cookies) {
+			return cookies[cookie];
+		} else {
+			return undefined;
+		}
+	}
 </script>
 
-{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
-		<div class="card workouts">
-			<div class="cardContent">
-				<div class="header-container">
-					<div class="header">WORKOUTS</div>
-					<button
-						class="add-workout-button"
-						on:click={() => {
-							showAddNewWorkoutsModal = true;
-						}}
-					>
-						<div class="addText">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								height="24px"
-								viewBox="0 -960 960 960"
-								width="24px"
-								fill="#5f6368"
-								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-							>
-						</div>
-					</button>
-				</div>
-				{#each workouts as workout}
-					<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
-						<div class="workoutContent">
-							{#each workout.exerciseList as excerciseID}
-								{@const exercise = getExerciseById(excerciseID)}
-								{@const jawn = console.log(exercise)}
-								{#if exercise !== null}
-									<div class="excercise">
-										<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
+{#if cookies && getCookie('token')}
+	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
+			<div class="card workouts">
+				<div class="cardContent">
+					<div class="header-container">
+						<div class="header">WORKOUTS</div>
+						<button
+							class="add-workout-button"
+							on:click={() => {
+								showAddNewWorkoutsModal = true;
+							}}
+						>
+							<div class="addText">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="24px"
+									viewBox="0 -960 960 960"
+									width="24px"
+									fill="#5f6368"
+									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+								>
+							</div>
+						</button>
+					</div>
+					{#each workouts as workout}
+						<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
+							<div class="workoutContent">
+								{#each workout.exerciseList as excerciseID}
+									{@const exercise = getExerciseById(excerciseID)}
+									{@const jawn = console.log(exercise)}
+									{#if exercise !== null}
+										<div class="excercise">
+											<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
+										</div>
+									{/if}
+								{/each}
+								<button
+									class="addExcercise"
+									on:click={() => {
+										currentlyEditingWorkout = workout.id;
+										showAddNewExerciseModal = true;
+									}}
+								>
+									<div class="addText">
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											height="24px"
+											viewBox="0 -960 960 960"
+											width="24px"
+											fill="#5f6368"
+											><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+										>
+										<div class="text">New</div>
 									</div>
-								{/if}
-							{/each}
-							<button
-								class="addExcercise"
-								on:click={() => {
-									currentlyEditingWorkout = workout.id;
-									showAddNewExerciseModal = true;
-								}}
-							>
-								<div class="addText">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										height="24px"
-										viewBox="0 -960 960 960"
-										width="24px"
-										fill="#5f6368"
-										><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-									>
-									<div class="text">New</div>
-								</div>
-							</button>
-						</div>
-					</Accordion>
-				{/each}
-			</div>
-		</div>
-
-		<div class="card muscleGroups">
-			<div class="cardContent">
-				<div class="header">MUSCLE GROUPS</div>
-				<div class="muscleGroupsContainer">
-					{#each muscleGroups as muscleGroup}
-						<div class="muscleGroup">
-							{muscleGroup.name}
-						</div>
+								</button>
+							</div>
+						</Accordion>
 					{/each}
-					<div class="addMuscleGroup">
-						<div class="addText">
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								height="24px"
-								viewBox="0 -960 960 960"
-								width="24px"
-								fill="#5f6368"
-								><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-							>
-							<div class="text">New</div>
+				</div>
+			</div>
+
+			<div class="card muscleGroups">
+				<div class="cardContent">
+					<div class="header">MUSCLE GROUPS</div>
+					<div class="muscleGroupsContainer">
+						{#each muscleGroups as muscleGroup}
+							<div class="muscleGroup">
+								{muscleGroup.name}
+							</div>
+						{/each}
+						<div class="addMuscleGroup">
+							<div class="addText">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="24px"
+									viewBox="0 -960 960 960"
+									width="24px"
+									fill="#5f6368"
+									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+								>
+								<div class="text">New</div>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="card workout-schedule">
-			<div class="cardContent">
-				<h4>WORKOUT SCHEDULE</h4>
-				<div class="schedule-day">Sun 08</div>
-				<div class="schedule-day">Mon 09</div>
-				<div class="schedule-day">...</div>
+			<div class="card workoutSchedule">
+				<div class="cardContent">
+					<h4>WORKOUT SCHEDULE</h4>
+					<div class="schedule"></div>
+				</div>
 			</div>
 		</div>
+	{:else}
+		<LoadingGraphic />
+	{/if}
+{:else if cookies}
+	<!-- Not logged in -->
+	<div class="homeContent">
+		<div class="welcome">
+			Welcome to <span>Pump Palooza</span>
+		</div>
+		<div class="subtext">The better workout tracker</div>
+		<div class="login">
+			<a href="/login">Log in now!</a>
+		</div>
 	</div>
-{:else}
-	<LoadingGraphic />
 {/if}
 
 <Modal bind:showModal={showAddNewWorkoutsModal}>
@@ -489,7 +522,7 @@
 				}
 			}
 		}
-		.workout-schedule {
+		.workoutSchedule {
 			margin: 10px;
 			box-sizing: border-box;
 			width: 100%;
@@ -497,12 +530,17 @@
 			.cardContent {
 				padding: 20px;
 			}
-			.schedule-day {
-				margin-bottom: 10px;
-				background-color: #666;
-				padding: 10px;
-				border-radius: 5px;
-				text-align: center;
+			.schedule {
+				width: 100%;
+				display: flex;
+				flex-direction: row;
+				.day {
+					width: calc(100% / 7);
+					border-left: 1px solid white;
+					&:last-child {
+						border-left: 1px solid white;
+					}
+				}
 			}
 		}
 	}
@@ -577,6 +615,46 @@
 		}
 		100% {
 			transform: rotate(0);
+		}
+	}
+
+	.homeContent {
+		color: white;
+		font-family: sans-serif;
+		.welcome {
+			font-size: 2.3em;
+			width: 100%;
+			text-align: center;
+			span {
+				color: rgb(115, 115, 255);
+			}
+		}
+		.subtext {
+			font-size: 1.3em;
+			width: 100%;
+			text-align: center;
+			color: rgb(187, 187, 187);
+			font-style: italic;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+		}
+		.login {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			a {
+				color: white;
+				padding: 12px;
+				font-size: 1.4em;
+				margin-top: 20px;
+				text-decoration: none;
+				border: 1px solid rgb(199, 199, 199);
+				background-color: #888;
+				border-radius: 10px;
+				&:hover {
+					background-color: rgb(107, 107, 107);
+					text-decoration: underline;
+				}
+			}
 		}
 	}
 </style>
