@@ -175,6 +175,16 @@
 									{@const jawn = console.log(exercise)}
 									{#if exercise !== null}
 										<div class="excercise">
+											<button class="delete">
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													height="24px"
+													viewBox="0 -960 960 960"
+													width="24px"
+													fill="#5f6368"><path d="M200-440v-80h560v80H200Z" /></svg
+												>
+												<div class="text">Remove?</div>
+											</button>
 											<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
 										</div>
 									{/if}
@@ -232,12 +242,27 @@
 
 			<div class="card workoutSchedule">
 				<div class="cardContent">
-					<h4>WORKOUT SCHEDULE</h4>
+					<div class="header">WORKOUT SCHEDULE</div>
 					<div class="schedule">
 						{#each getAllExerciseDays(allExerciseStats) as day, i}
 							<div class="day {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
 								<div class="dayName unselectable">
 									{getDayNameFromNumber(i)}
+								</div>
+								<div class="stats">
+									<button class="add">
+										<div class="addText">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												height="24px"
+												viewBox="0 -960 960 960"
+												width="24px"
+												fill="#5f6368"
+												><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+											>
+											<div class="text">New</div>
+										</div>
+									</button>
 								</div>
 							</div>
 						{/each}
@@ -400,7 +425,7 @@
 		margin: 0 auto;
 		min-height: 100%;
 		row-gap: 10px;
-		max-width: 916px;
+		max-width: 1000px;
 		width: calc(100% - 20px);
 		box-sizing: border-box;
 
@@ -440,13 +465,17 @@
 				padding: 20px;
 				box-sizing: border-box;
 				overflow: hidden;
+				align-items: center;
+				justify-content: center;
+				text-align: center;
 				.excercise,
 				.addExcercise {
 					padding-left: 20px;
 					padding-right: 20px;
 					padding-top: 7px;
 					padding-bottom: 7px;
-					width: calc(50% - 10px);
+					min-width: calc(50% - 10px);
+					width: fit-content;
 					box-sizing: border-box;
 					border-radius: 10px;
 					display: flex;
@@ -460,15 +489,52 @@
 						color: white;
 						text-decoration: none;
 					}
-					.muscleGroup {
-						font-size: 10pt;
-					}
-					.sets {
-						font-size: 10pt;
-					}
 				}
 				.excercise {
+					position: relative;
 					background-color: #666;
+					padding-left: 15%;
+					display: flex;
+					flex-direction: row;
+					.delete {
+						position: absolute;
+						left: 0;
+						top: 0;
+						width: 2em;
+						background-color: rgba(255, 0, 0, 0.2);
+						height: 100%;
+						border: none;
+						border-top-left-radius: 10px;
+						border-bottom-left-radius: 10px;
+						align-items: left;
+						text-align: left;
+						overflow: hidden;
+						display: flex;
+						flex-direction: row;
+						&:hover {
+							transition: 400ms;
+							width: 100%;
+							background-color: rgb(190, 0, 0);
+							border-top-right-radius: 10px;
+							border-bottom-right-radius: 10px;
+						}
+
+						svg {
+							height: 100%;
+							min-width: 1.3em;
+							fill: rgb(252, 252, 252);
+						}
+						.text {
+							font-size: 1.3em;
+							display: flex;
+							margin-left: 1.8em;
+							height: 100%;
+							text-align: left;
+							width: calc(100% / (1 / 20));
+							align-items: center;
+							color: white;
+						}
+					}
 				}
 				.addExcercise {
 					background-color: transparent;
@@ -513,7 +579,7 @@
 				padding: 10px;
 				padding-left: 15px;
 				padding-bottom: 5px;
-				width: 100%;
+				width: 90%;
 				border-bottom: 1px solid #616161;
 			}
 			.muscleGroupsContainer {
@@ -574,31 +640,91 @@
 			border-radius: 10px;
 			.cardContent {
 				padding: 20px;
-			}
-			.schedule {
-				width: 100%;
-				display: flex;
-				flex-direction: row;
-				.day {
-					width: calc(100% / 7);
-					background-color: rgba(255, 255, 255, 0.08);
-					border-left: 1px solid white;
-					min-height: 14vh;
-					&:last-child {
-						border-right: 1px solid white;
-					}
-					&.past {
-						background-color: rgba(0, 0, 0, 0.08);
-					}
-					&.today {
-						background-color: rgba(0, 26, 255, 0.08);
-					}
-					.dayName {
-						color: rgba(255, 255, 255, 0.623);
-						font-size: 0.8em;
-						width: 100%;
-						text-align: center;
-						padding-top: 0.4em;
+				.header {
+					padding: 10px;
+					padding-left: 15px;
+					padding-bottom: 20px;
+					width: 100%;
+				}
+				.schedule {
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					.day {
+						width: calc(100% / 7);
+						background-color: rgba(255, 255, 255, 0.08);
+						color: rgba(255, 255, 255, 0.9);
+						border-left: 1px solid rgba(255, 255, 255, 0.3);
+						min-height: 14vh;
+						&:last-child {
+							border-right: 1px solid rgba(255, 255, 255, 0.3);
+						}
+						&.past {
+							color: rgba(255, 255, 255, 0.623);
+							background-color: rgba(0, 0, 0, 0.08);
+						}
+
+						border-right: 1px solid rgba(255, 255, 255, 0.3);
+						&.today {
+							color: rgb(194, 195, 255);
+							background-color: rgba(0, 26, 255, 0.08);
+						}
+						&:hover {
+							.stats > .add {
+								visibility: visible;
+							}
+						}
+						.dayName {
+							font-size: 0.8em;
+							width: 100%;
+							text-align: center;
+							padding-top: 0.4em;
+						}
+						.stats {
+							display: flex;
+							flex-direction: column;
+							gap: 0.3em;
+							width: 100%;
+							align-items: center;
+							padding-top: 0.3em;
+
+							.add {
+								visibility: hidden;
+								border-radius: 10px;
+								background-color: transparent;
+								border: 2px dashed #666;
+								color: #666;
+								padding: 3px;
+								justify-content: center;
+								align-items: center;
+								width: fit-content;
+								cursor: pointer;
+								.addText {
+									padding-right: 0.3em;
+									display: flex;
+									justify-content: center;
+									align-items: center;
+									font-size: 1.2em;
+									svg {
+										fill: #666;
+										height: 1.2em;
+										width: 1.2em;
+									}
+								}
+								&:hover {
+									transition: 0.2s;
+									border: 2px dashed #999;
+									color: #999;
+									svg {
+										transition: 0.2s;
+										fill: #999;
+										animation-name: wiggle;
+										animation-duration: 0.5s;
+										animation-iteration-count: 1;
+									}
+								}
+							}
+						}
 					}
 				}
 			}
