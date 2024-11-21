@@ -41,7 +41,7 @@ describe('exercise stats tests', () => {
 });
 
 describe('user workouts', () => {
-	it('gets userworout by id', async () => {
+	it('gets user workout by id', async () => {
 		const exercise = await UserWorkoutRepo.getUserWorkoutById(15);
 		console.log(exercise);
 		expect(exercise?.id).toBe(15);
