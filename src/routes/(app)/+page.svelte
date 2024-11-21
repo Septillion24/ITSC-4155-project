@@ -28,6 +28,8 @@
 		exercises = await (await fetch('/api/get/exercises')).json();
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
+		console.log(workouts);
+		console.log(exercises);
 	});
 
 	async function submitNewWorkout() {
@@ -61,7 +63,7 @@
 
 	function getExerciseById(id: number) {
 		for (const exercise of exercises) {
-			if (exercise.exerciseID === id) {
+			if (exercise.id === id) {
 				return exercise;
 			}
 		}
@@ -110,11 +112,10 @@
 						<div class="workoutContent">
 							{#each workout.exerciseList as excerciseID}
 								{@const exercise = getExerciseById(excerciseID)}
+								{@const jawn = console.log(exercise)}
 								{#if exercise !== null}
 									<div class="excercise">
-										<div class="name">{exercise.name}</div>
-										<div class="muscleGroup">{exercise.muscleGroupID}</div>
-										<div class="sets">{exercise.numberOfSets} x {exercise.numberOfReps}</div>
+										<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
 									</div>
 								{/if}
 							{/each}
@@ -377,6 +378,9 @@
 
 					.name {
 						font-size: 12pt;
+						font-family: sans-serif;
+						color: white;
+						text-decoration: none;
 					}
 					.muscleGroup {
 						font-size: 10pt;

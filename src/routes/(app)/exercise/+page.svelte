@@ -17,12 +17,13 @@
 				'Content-Type': 'application/json'
 			}
 		}).then((res) => res.json());
-		// allExerciseStats = await fetch('/api/get/exerciseStats', {
-		// 	method: 'GET',
-		// 	headers: {
-		// 		'Content-Type': 'application/json'
-		// 	}
-		// }).then((res) => res.json());
+		allExerciseStats = await fetch('/api/get/exerciseStats', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then((res) => res.json());
+		console.log(allExerciseStats);
 	});
 
 	$: hash = $page.url.hash.substring(1);
@@ -93,7 +94,7 @@
 				<div class="card">
 					<div class="video cardContent">
 						<!-- svelte-ignore a11y-missing-attribute -->
-						<iframe width="640" height="360" src={currentExercise.videoURL} />
+						<iframe width="360" height="640" src={currentExercise.videoURL}> </iframe>
 					</div>
 				</div>
 			</div>
@@ -174,12 +175,13 @@
 		height: 80vh;
 		box-sizing: border-box;
 		padding: 40px;
-		padding-left: 5%;
-		padding-right: 5%;
+		padding-left: 10%;
+		padding-right: 10%;
 		font-family: sans-serif;
 		display: flex;
 		flex-direction: row;
-		gap: 10px;
+		gap: 5%;
+		// justify-content: space-between;
 		.leftContent {
 			display: flex;
 			flex-direction: column;
