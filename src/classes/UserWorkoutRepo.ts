@@ -31,7 +31,7 @@ export default class UserWorkoutRepo {
 			user_id: string | null;
 		};
 		const workoutsFromDatabase = await sql<UserWorkoutFromDatabase[]>`
-            SELECT * FROM user_workouts WHERE workout_id = ${workoutID}
+            SELECT * FROM user_workouts WHERE id = ${workoutID}
         `;
 		if (workoutsFromDatabase.length === 0) {
 			return null;
@@ -73,14 +73,14 @@ export default class UserWorkoutRepo {
 		await sql`
 			UPDATE user_workouts
             SET ${sql(updates)}
-            WHERE workout_id = ${workoutID}
+            WHERE id = ${workoutID}
         `;
 		return await this.getUserWorkoutById(workoutID);
 	}
 
 	static async deleteWorkout(workoutID: number): Promise<void> {
 		await sql`
-            DELETE FROM user_workouts WHERE workout_id = ${workoutID}
+            DELETE FROM user_workouts WHERE id = ${workoutID}
         `;
 	}
 
