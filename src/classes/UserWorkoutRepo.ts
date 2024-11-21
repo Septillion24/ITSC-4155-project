@@ -70,9 +70,14 @@ export default class UserWorkoutRepo {
 		if (!updates.name && !updates.exerciseList && !updates.userID) {
 			return null;
 		}
+		const queryInfo = {
+			name: updates.name,
+			exercise_list: updates.exerciseList,
+			user_id: updates.userID
+		};
 		await sql`
 			UPDATE user_workouts
-            SET ${sql(updates)}
+            SET ${sql(queryInfo)}
             WHERE id = ${workoutID}
         `;
 		return await this.getUserWorkoutById(workoutID);
