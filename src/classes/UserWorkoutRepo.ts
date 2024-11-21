@@ -1,11 +1,5 @@
 import sql from '$lib/DatabaseConnection';
-
-export type UserWorkout = {
-	ID: number;
-	name: string;
-	exerciseList: number[];
-	userID: string | null;
-};
+import type { UserWorkout } from './UserWorkout';
 
 export default class UserWorkoutRepo {
 	static async getUserWorkouts(userID: string): Promise<UserWorkout[]> {
