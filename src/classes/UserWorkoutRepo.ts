@@ -70,6 +70,14 @@ export default class UserWorkoutRepo {
 		if (!updates.name && !updates.exerciseList && !updates.userID) {
 			return null;
 		}
+		if (workoutID === undefined) {
+			console.log('workoutID is undefined');
+			return null;
+		}
+		if (workoutID === null) {
+			console.log('workoutID is null');
+			return null;
+		}
 		const queryInfo = {
 			name: updates.name,
 			exercise_list: updates.exerciseList,
