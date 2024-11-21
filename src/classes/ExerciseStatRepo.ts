@@ -51,5 +51,59 @@ export default class ExerciseStatRepo {
 			weight: exerciseStatInfo.weight
 		};
 	}
-	static async updateExerciseStat() {}
+	static async updateExerciseStat(
+		exerciseStatID: number,
+		updates: {
+			exerciseID?: number;
+			userID?: string;
+			date?: Date;
+			sets?: number;
+			reps?: number;
+			weight?: number[];
+		}
+	) {
+		if (
+			!updates.exerciseID &&
+			!updates.userID &&
+			!updates.date &&
+			!updates.sets &&
+			!updates.reps &&
+			!updates.weight
+		) {
+			return;
+		}
+		await sql`UPDATE exercise_stats SET ${sql(updates)} WHERE exercise_stat_id=${exerciseStatID}`;
+		return await this.getExerciseStatById(exerciseStatID);
+	}
+
+	static async getExerciseStatById(exerciseStatID: number): Promise<ExerciseStat | null> {
+		type ExerciseStatFromDatabase = {
+			exercise_stat_id: number;
+			exercise_id: number;
+			user_id: string;
+			date: Date;
+			sets: number;
+			reps: number;
+			weight: number[];
+		};
+		const exerciseStatFromDatabase = await sql<ExerciseStatFromDatabase[]>`
+			SELECT * FROM exercise_stats WHERE exercise_stat_id = ${exerciseStatID}
+		`;
+		if (exerciseStatFromDatabase.length === 0) {
+			return null;
+		}
+		const exerciseStat = exerciseStatFromDatabase[0];
+		return {
+			ID: exerciseStat.exercise_stat_id,
+			exerciseID: exerciseStat.exercise_id,
+			userID: exerciseStat.user_id,
+			date: exerciseStat.date,
+			sets: exerciseStat.sets,
+			reps: exerciseStat.reps,
+			weight: exerciseStat.weight
+		};
+	}
+	static async deleteExerciseStat(exerciseStatID: number) {
+		await sql`DELETE FROM exercise_stats WHERE exercise_stat_id=${exerciseStatID}`;
+	}
 }
