@@ -207,6 +207,19 @@
 		}
 	}
 
+	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
+		const response = fetch('/api/delete/exerciseFromWorkout', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				workoutID: workoutID,
+				exerciseID: exerciseID
+			})
+		});
+	}
+
 	$: if (currentlyFilteredMuscleGroup) {
 		currentlyFilteredExerciseIDs = getCurrentlyFilteredExerciseIDsByMuscleGroupID(
 			currentlyFilteredMuscleGroup
@@ -318,6 +331,7 @@
 					{#each workouts as workout}
 						{#if currentlyFilteredMuscleGroup === undefined || currentlyFilteredWorkoutIDs.includes(workout.id)}
 							<Accordion
+								workoutID={workout.id}
 								workoutTitle={workout.name}
 								exerciseNumber="{currentlyFilteredMuscleGroup
 									? getNumberOfExercisesInWorkoutByMuscleGroup(
@@ -325,13 +339,21 @@
 											currentlyFilteredMuscleGroup
 										) + ' / '
 									: ''}{workout.exerciseList.length}"
+								on:delete={() => {
+									workouts = workouts.filter((w) => {
+										w.id === workout.id;
+									});
+								}}
 							>
 								<div class="workoutContent">
 									{#each workout.exerciseList as excerciseID}
 										{@const exercise = getExerciseById(excerciseID)}
 										{#if exercise !== null}
 											<div class="excercise">
-												<button class="delete">
+												<button
+													class="delete"
+													on:click={() => handleRemoveExerciseFromWorkout(workout.id, excerciseID)}
+												>
 													<svg
 														xmlns="http://www.w3.org/2000/svg"
 														height="24px"
@@ -1005,7 +1027,6 @@
 			transform: rotate(0);
 		}
 	}
-
 	.homeContent {
 		color: white;
 		font-family: sans-serif;
@@ -1045,7 +1066,6 @@
 			}
 		}
 	}
-
 	.unselectable {
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;

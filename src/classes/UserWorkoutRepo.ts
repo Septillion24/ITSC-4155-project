@@ -80,7 +80,7 @@ export default class UserWorkoutRepo {
 
 	static async deleteWorkout(workoutID: number): Promise<void> {
 		await sql`
-            DELETE FROM user_workouts WHERE workout_id = ${workoutID}
+            DELETE FROM user_workouts WHERE id = ${workoutID}
         `;
 	}
 
