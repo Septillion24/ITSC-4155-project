@@ -6,16 +6,16 @@
 	import type { MuscleGroup } from '../../classes/MuscleGroup';
 	import type { UserWorkout } from '../../classes/UserWorkout';
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
+	import type { ExerciseStat } from '../../classes/ExerciseStat';
 
 	let showAddNewExerciseModal = false;
 	let showAddNewWorkoutsModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 
 	let workouts: UserWorkout[] = [];
-
 	let exercises: Exercise[] = [];
-
 	let muscleGroups: MuscleGroup[] = [];
+	let allExerciseStats: ExerciseStat[] = [];
 
 	let workout: String = '';
 	let exerciseName: String;
@@ -32,6 +32,7 @@
 		exercises = await (await fetch('/api/get/exercises')).json();
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
+		allExerciseStats = await (await fetch('/api/get/exerciseStats')).json();
 		console.log(workouts);
 		console.log(exercises);
 	});
@@ -102,10 +103,46 @@
 			return undefined;
 		}
 	}
+
+	function getAllExerciseDays(
+		exerciseStats: ExerciseStat[]
+	): [{ stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }] {
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+
+		const sunday = new Date(today);
+		sunday.setDate(sunday.getDate() - sunday.getDay());
+
+		const weekData: { stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }[] = [];
+
+		for (let i = 0; i < 7; i++) {
+			const currentDay = new Date(sunday);
+			currentDay.setDate(sunday.getDate() + i);
+
+			const statsForTheDay = exerciseStats.filter((stat) => {
+				const statDate = new Date(stat.date);
+				statDate.setHours(0, 0, 0, 0);
+				return statDate.getTime() === currentDay.getTime();
+			});
+
+			weekData.push({
+				stats: statsForTheDay,
+				isToday: currentDay.getTime() === today.getTime(),
+				isPassed: currentDay.getTime() < today.getTime()
+			});
+		}
+
+		return weekData as [{ stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }];
+	}
+
+	function getDayNameFromNumber(number: number) {
+		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		return dayNames[number] || 'Invalid day';
+	}
 </script>
 
 {#if cookies && getCookie('token')}
-	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
+	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0 && allExerciseStats !== undefined}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
 			<div class="card workouts">
@@ -196,7 +233,13 @@
 			<div class="card workoutSchedule">
 				<div class="cardContent">
 					<h4>WORKOUT SCHEDULE</h4>
-					<div class="schedule"></div>
+					<div class="schedule">
+						{#each getAllExerciseDays(allExerciseStats) as day, i}
+							<div class="day {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
+								{getDayNameFromNumber(i)}
+							</div>
+						{/each}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -536,9 +579,17 @@
 				flex-direction: row;
 				.day {
 					width: calc(100% / 7);
+					background-color: rgba(255, 255, 255, 0.08);
 					border-left: 1px solid white;
+					min-height: 14vh;
 					&:last-child {
-						border-left: 1px solid white;
+						border-right: 1px solid white;
+					}
+					&.past {
+						background-color: rgba(0, 0, 0, 0.08);
+					}
+					&.today {
+						background-color: rgba(0, 26, 255, 0.08);
 					}
 				}
 			}
