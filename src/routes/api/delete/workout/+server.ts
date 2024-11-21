@@ -3,12 +3,12 @@ import WorkoutRepo from '../../../../classes/UserWorkoutRepo.js';
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
 
-	if (requestJSON.workout_id === undefined) {
+	if (requestJSON.id === undefined) {
 		return new Response('Bad Request', { status: 400 });
 	}
 
 	try {
-		await WorkoutRepo.deleteWorkout(requestJSON.workout_id);
+		await WorkoutRepo.deleteWorkout(requestJSON.id);
 		return new Response('OK', { status: 200 });
 	} catch (error) {
 		console.error('Error deleting workout:', error);
