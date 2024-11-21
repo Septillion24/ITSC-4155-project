@@ -16,7 +16,7 @@ export default class ExerciseStatRepo {
             SELECT * FROM exercise_stats WHERE user_id = ${ID}
         `;
 		return exerciseStatsFromDatabase.map((exerciseStat) => ({
-			ID: exerciseStat.exercise_stat_id,
+			id: exerciseStat.exercise_stat_id,
 			exerciseID: exerciseStat.exercise_id,
 			userID: exerciseStat.user_id,
 			date: exerciseStat.date,
@@ -42,7 +42,7 @@ export default class ExerciseStatRepo {
             ) RETURNING exercise_stat_id
         `;
 		return {
-			ID: row[0].exercise_stat_id,
+			id: row[0].exercise_stat_id,
 			exerciseID: exerciseStatInfo.exerciseID,
 			userID: exerciseStatInfo.userID,
 			date: exerciseStatInfo.date,
@@ -94,7 +94,7 @@ export default class ExerciseStatRepo {
 		}
 		const exerciseStat = exerciseStatFromDatabase[0];
 		return {
-			ID: exerciseStat.exercise_stat_id,
+			id: exerciseStat.exercise_stat_id,
 			exerciseID: exerciseStat.exercise_id,
 			userID: exerciseStat.user_id,
 			date: exerciseStat.date,

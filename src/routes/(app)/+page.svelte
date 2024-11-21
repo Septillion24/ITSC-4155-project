@@ -17,6 +17,11 @@
 	let muscleGroups: MuscleGroup[] = [];
 	let allExerciseStats: ExerciseStat[] = [];
 
+	let currentlyFilteredWorkoutIDs: number[] = [];
+	let currentlyFilteredExerciseIDs: number[] = [];
+
+	let currentlyFilteredMuscleGroup: number | undefined = undefined;
+
 	let workout: String = '';
 	let exerciseName: String;
 	let muscleGroup: String = '';
@@ -139,12 +144,99 @@
 		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 		return dayNames[number] || 'Invalid day';
 	}
+
+	function getCurrentlyFilteredWorkoutIDsByMuscleGroupID(muscleGroupID: number): number[] {
+		const relatedExerciseIDs = new Set<number>();
+		for (const group of muscleGroups) {
+			if (group.id === muscleGroupID) {
+				group.exerciseIDs.forEach((exerciseID) => relatedExerciseIDs.add(exerciseID));
+				break;
+			}
+		}
+
+		const filteredWorkoutIDs = workouts
+			.filter((workout) =>
+				workout.exerciseList.some((exerciseID) => relatedExerciseIDs.has(exerciseID))
+			)
+			.map((workout) => workout.id);
+
+		return filteredWorkoutIDs;
+	}
+
+	function getCurrentlyFilteredExerciseIDsByMuscleGroupID(muscleGroupID: number): number[] {
+		const muscleGroup = muscleGroups.find((group) => group.id === muscleGroupID);
+		if (muscleGroup) {
+			return muscleGroup.exerciseIDs;
+		} else {
+			return [];
+		}
+	}
+
+	function getNumberOfExercisesInWorkoutByMuscleGroup(
+		workoutID: number,
+		muscleGroupID: number
+	): number {
+		const relatedExerciseIDs = new Set<number>();
+		for (const group of muscleGroups) {
+			if (group.id === muscleGroupID) {
+				group.exerciseIDs.forEach((exerciseID) => relatedExerciseIDs.add(exerciseID));
+				break;
+			}
+		}
+
+		const workout = workouts.find((workout) => workout.id === workoutID);
+		if (!workout) {
+			return 0;
+		}
+
+		const count = workout.exerciseList.filter((exerciseID) =>
+			relatedExerciseIDs.has(exerciseID)
+		).length;
+
+		return count;
+	}
+
+	$: if (currentlyFilteredMuscleGroup) {
+		currentlyFilteredExerciseIDs = getCurrentlyFilteredExerciseIDsByMuscleGroupID(
+			currentlyFilteredMuscleGroup
+		);
+	}
+
+	$: if (currentlyFilteredMuscleGroup) {
+		currentlyFilteredWorkoutIDs = getCurrentlyFilteredWorkoutIDsByMuscleGroupID(
+			currentlyFilteredMuscleGroup
+		);
+	}
 </script>
 
 {#if cookies && getCookie('token')}
 	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0 && allExerciseStats !== undefined}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
+			<div class="card muscleGroups">
+				<div class="cardContent">
+					<div class="header">MUSCLE GROUPS</div>
+					<div class="muscleGroupsContainer">
+						{#each muscleGroups as muscleGroup}
+							<button
+								on:click={() => {
+									if (!currentlyFilteredMuscleGroup) {
+										currentlyFilteredMuscleGroup = muscleGroup.id;
+									} else {
+										currentlyFilteredMuscleGroup = undefined;
+									}
+								}}
+								class="muscleGroup {currentlyFilteredMuscleGroup === muscleGroup.id
+									? 'active'
+									: ''}"
+							>
+								{muscleGroup.name}
+							</button>
+						{/each}
+					</div>
+				</div>
+			</div>
+
 			<div class="card workouts">
 				<div class="cardContent">
 					<div class="header-container">
@@ -168,75 +260,63 @@
 						</button>
 					</div>
 					{#each workouts as workout}
-						<Accordion workoutTitle={workout.name} exerciseNumber={workout.exerciseList.length}>
-							<div class="workoutContent">
-								{#each workout.exerciseList as excerciseID}
-									{@const exercise = getExerciseById(excerciseID)}
-									{@const jawn = console.log(exercise)}
-									{#if exercise !== null}
-										<div class="excercise">
-											<button class="delete">
-												<svg
-													xmlns="http://www.w3.org/2000/svg"
-													height="24px"
-													viewBox="0 -960 960 960"
-													width="24px"
-													fill="#5f6368"><path d="M200-440v-80h560v80H200Z" /></svg
-												>
-												<div class="text">Remove?</div>
-											</button>
-											<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
+						{#if currentlyFilteredMuscleGroup === undefined || currentlyFilteredWorkoutIDs.includes(workout.id)}
+							<Accordion
+								workoutTitle={workout.name}
+								exerciseNumber="{currentlyFilteredMuscleGroup
+									? getNumberOfExercisesInWorkoutByMuscleGroup(
+											workout.id,
+											currentlyFilteredMuscleGroup
+										) + ' / '
+									: ''}{workout.exerciseList.length}"
+							>
+								<div class="workoutContent">
+									{#each workout.exerciseList as excerciseID}
+										{@const exercise = getExerciseById(excerciseID)}
+										{@const jawn = console.log(exercise)}
+										{#if exercise !== null}
+											<div class="excercise">
+												<button class="delete">
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														height="24px"
+														viewBox="0 -960 960 960"
+														width="24px"
+														fill="#5f6368"><path d="M200-440v-80h560v80H200Z" /></svg
+													>
+													<div class="text">Remove?</div>
+												</button>
+												<a class="name" href="/exercise#{exercise.id}">{exercise.name}</a>
+											</div>
+										{/if}
+									{/each}
+									<button
+										class="addExcercise"
+										on:click={() => {
+											currentlyEditingWorkout = workout.id;
+											showAddNewExerciseModal = true;
+										}}
+									>
+										<div class="addText">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												height="24px"
+												viewBox="0 -960 960 960"
+												width="24px"
+												fill="#5f6368"
+												><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+											>
+											<div class="text">New</div>
 										</div>
-									{/if}
-								{/each}
-								<button
-									class="addExcercise"
-									on:click={() => {
-										currentlyEditingWorkout = workout.id;
-										showAddNewExerciseModal = true;
-									}}
-								>
-									<div class="addText">
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											height="24px"
-											viewBox="0 -960 960 960"
-											width="24px"
-											fill="#5f6368"
-											><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-										>
-										<div class="text">New</div>
-									</div>
-								</button>
-							</div>
-						</Accordion>
+									</button>
+								</div>
+							</Accordion>
+						{/if}
 					{/each}
-				</div>
-			</div>
 
-			<div class="card muscleGroups">
-				<div class="cardContent">
-					<div class="header">MUSCLE GROUPS</div>
-					<div class="muscleGroupsContainer">
-						{#each muscleGroups as muscleGroup}
-							<div class="muscleGroup">
-								{muscleGroup.name}
-							</div>
-						{/each}
-						<div class="addMuscleGroup">
-							<div class="addText">
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									height="24px"
-									viewBox="0 -960 960 960"
-									width="24px"
-									fill="#5f6368"
-									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-								>
-								<div class="text">New</div>
-							</div>
-						</div>
-					</div>
+					{#if (currentlyFilteredMuscleGroup !== undefined && currentlyFilteredWorkoutIDs.length === 0) || !workouts.some((workout) => currentlyFilteredMuscleGroup === undefined || currentlyFilteredWorkoutIDs.includes(workout.id))}
+						<div class="empty">Hmm, there's nothing here...</div>
+					{/if}
 				</div>
 			</div>
 
@@ -432,7 +512,7 @@
 		.workouts {
 			margin: 8px;
 			box-sizing: border-box;
-			width: calc(50% - 16px);
+			width: calc(65% - 18px);
 			border-radius: 10px;
 			.header-container {
 				display: flex;
@@ -456,6 +536,13 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
+			}
+			.empty {
+				margin-top: 20px;
+				width: 100%;
+				text-align: center;
+				color: gray;
+				font-style: italic;
 			}
 			.workoutContent {
 				width: 100%;
@@ -493,7 +580,7 @@
 				.excercise {
 					position: relative;
 					background-color: #666;
-					padding-left: 15%;
+					padding-left: 2.3em;
 					display: flex;
 					flex-direction: row;
 					.delete {
@@ -580,7 +667,8 @@
 		.muscleGroups {
 			margin: 8px;
 			box-sizing: border-box;
-			width: calc(50% - 16px);
+			width: calc(35% - 16px);
+			min-height: 35vh;
 			border-radius: 10px;
 			.header {
 				padding: 10px;
@@ -599,12 +687,17 @@
 				box-sizing: border-box;
 				.muscleGroup,
 				.addMuscleGroup {
+					border: none;
+					color: white;
 					width: calc(50% - 10px);
 					background-color: #666;
 					border-radius: 13px;
 					padding: 8px;
 					box-sizing: border-box;
 					text-align: center;
+					&.active {
+						background-color: #576096;
+					}
 				}
 				.addMuscleGroup {
 					background-color: transparent;

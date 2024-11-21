@@ -14,7 +14,7 @@ export default class UserWorkoutRepo {
 			return [];
 		}
 		return workoutsFromDatabase.map((workout) => ({
-			ID: workout.workout_id,
+			id: workout.workout_id,
 			name: workout.name,
 			exerciseList: workout.exercise_list
 		}));
@@ -34,7 +34,7 @@ export default class UserWorkoutRepo {
 		}
 		const workout = workoutsFromDatabase[0];
 		return {
-			ID: workout.workout_id,
+			id: workout.workout_id,
 			name: workout.name,
 			exerciseList: workout.exercise_list
 		};
@@ -47,7 +47,7 @@ export default class UserWorkoutRepo {
             RETURNING workout_id
         `;
 		return {
-			ID: row[0].workout_id,
+			id: row[0].workout_id,
 			name,
 			exerciseList
 		};

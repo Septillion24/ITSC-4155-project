@@ -1,5 +1,5 @@
 export type ExerciseStat = {
-	ID: number;
+	id: number;
 	exerciseID: number;
 	userID: string;
 	date: Date;
