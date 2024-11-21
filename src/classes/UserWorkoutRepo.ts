@@ -78,11 +78,21 @@ export default class UserWorkoutRepo {
 			console.log('workoutID is null');
 			return null;
 		}
-		const queryInfo = {
-			name: updates.name,
-			exercise_list: updates.exerciseList,
-			user_id: updates.userID
-		};
+		const queryInfo: { [key: string]: string | number[] | null } = {};
+
+		if (updates.name !== undefined) {
+			queryInfo.name = updates.name;
+		}
+		if (updates.exerciseList !== undefined) {
+			queryInfo.exercise_list = updates.exerciseList;
+		}
+		if (updates.userID !== undefined) {
+			queryInfo.user_id = updates.userID;
+		}
+
+		if (Object.keys(queryInfo).length === 0) {
+			return null;
+		}
 		await sql`
 			UPDATE user_workouts
             SET ${sql(queryInfo)}

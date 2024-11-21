@@ -49,9 +49,49 @@ describe('user workouts', () => {
 		expect(exercise?.exerciseList).toEqual([]);
 		expect(exercise?.userID).toBe('102076183365937191708');
 	});
-	it('gets all excercises', async () => {
-		const exercises = await ExerciseRepo.getExercises();
-		expect(exercises.length).toBe(31);
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(3, {
+			name: 'sadsaddsa',
+			exerciseList: [1, 2, 3],
+			userID: '14'
+		});
+		expect(workout?.id).toBe(3);
+		expect(workout?.name).toBe('sadsaddsa');
+		expect(workout?.exerciseList).toEqual([1, 2, 3]);
+		expect(workout?.userID).toBe('14');
+	});
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(3, {
+			exerciseList: [1, 2, 5]
+		});
+		expect(workout?.id).toBe(3);
+		expect(workout?.name).toBe('sadsaddsa');
+		expect(workout?.exerciseList).toEqual([1, 2, 5]);
+		expect(workout?.userID).toBe('14');
+	});
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(3, {
+			userID: '15'
+		});
+		expect(workout?.id).toBe(3);
+		expect(workout?.name).toBe('sadsaddsa');
+		expect(workout?.exerciseList).toEqual([1, 2, 5]);
+		expect(workout?.userID).toBe('15');
+	});
+	it('updates', async () => {
+		const workout = await UserWorkoutRepo.updateWorkout(3, {
+			name: 'jorn'
+		});
+		expect(workout?.id).toBe(3);
+		expect(workout?.name).toBe('jorn');
+		expect(workout?.exerciseList).toEqual([1, 2, 5]);
+		expect(workout?.userID).toBe('15');
+	});
+	it('adds workout', async () => {
+		const workout = await UserWorkoutRepo.addWorkout('jawn', [1, 2, 3], '14');
+		expect(workout.name).toBe('jawn');
+		expect(workout.exerciseList).toEqual([1, 2, 3]);
+		expect(workout.userID).toBe('14');
 	});
 });
 
