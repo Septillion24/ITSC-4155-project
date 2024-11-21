@@ -39,26 +39,4 @@ export default class ExerciseRepo {
 			videoURL: exercise.video_url
 		};
 	}
-
-	static async addExercise(exerciseInfo: {
-		name: string;
-		description: string;
-		videoURL?: string | null;
-	}): Promise<Exercise> {
-		const row = await sql`
-            INSERT INTO exercises (
-                name, description, video_url
-            ) VALUES (
-                ${exerciseInfo.name}, ${exerciseInfo.description}, ${exerciseInfo.videoURL ?? null}
-            ) RETURNING exercise_id
-        `;
-		const exercise_id = row[0].exercise_id;
-
-		return {
-			id: exercise_id,
-			name: exerciseInfo.name,
-			description: exerciseInfo.description,
-			videoURL: exerciseInfo.videoURL ?? null
-		};
-	}
 }
