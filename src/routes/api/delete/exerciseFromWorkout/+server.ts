@@ -10,7 +10,7 @@ export async function POST({ request }): Promise<Response> {
 
 	try {
 		await WorkoutRepo.updateWorkout(requestJSON.workoutID, {
-			exerciseList: workout.exerciseList.filter((e) => e === requestJSON.exerciseID)
+			exerciseList: workout.exerciseList.filter((e) => e !== requestJSON.exerciseID)
 		});
 		return new Response('OK', { status: 200 });
 	} catch (error) {
