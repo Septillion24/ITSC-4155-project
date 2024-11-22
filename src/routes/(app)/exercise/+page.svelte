@@ -5,6 +5,7 @@
 	import LoadingGraphic from '$lib/LoadingGraphic.svelte';
 	import type { Exercise } from '../../../classes/Exercise';
 	import type { MuscleGroup } from '../../../classes/MuscleGroup';
+	import Modal from '$lib/Modal.svelte';
 
 	let displayContents = true;
 
@@ -13,6 +14,10 @@
 	let allExerciseStats: ExerciseStat[];
 	let allMuscleGroups: MuscleGroup[] = [];
 
+	let showModal = false;
+	let weightToAdd: number | undefined = undefined;
+	let setsToAdd: number | undefined = undefined;
+	let repsToAdd: number | undefined = undefined;
 	let currentFilterText: string = '';
 
 	onMount(async () => {
@@ -31,6 +36,21 @@
 		}).then((res) => res.json());
 		allMuscleGroups = await (await fetch('/api/get/muscleGroups')).json();
 	});
+
+	async function addExerciseStat() {
+		const response = await fetch('/api/create/exerciseStat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				exerciseID: currentExerciseID,
+				sets: setsToAdd,
+				reps: repsToAdd,
+				weight: weightToAdd
+			})
+		});
+	}
 
 	$: hash = $page.url.hash.substring(1);
 
@@ -66,6 +86,14 @@
 		}
 	}
 
+	function getPrettyPrintDate(date: Date) {
+		const options = { day: '2-digit', month: 'short', year: 'numeric' };
+		// @ts-ignore
+		const formattedDate = date.toLocaleDateString('en-GB', options).replace(',', '');
+
+		return formattedDate;
+	}
+
 	// function getColorFromBodyGroup(bodyGroup: string | undefined) {
 	// 	if (bodyGroup === 'Legs') return 'blue';
 	// 	if (bodyGroup === 'Back') return 'red';
@@ -91,27 +119,59 @@
 			<div class="leftContent">
 				<div class="card">
 					<div class="flavor cardContent">
-						<div class="title unselectable">{currentExercise.name}</div>
+						<div class="top">
+							<div class="title unselectable">{currentExercise.name}</div>
+							<div
+								class="bodyGroup {getMuscleGroupForExercise(
+									currentExercise.id
+								)?.name.toLowerCase()}"
+							>
+								{getMuscleGroupForExercise(currentExercise.id)?.name}
+							</div>
+						</div>
 						<div class="description">{currentExercise?.description}</div>
 					</div>
 				</div>
 				<div class="card">
 					<div class="stats cardContent">
 						<div class="title">Stats</div>
-						<div>
+						<div class="statsContainer">
 							{#if allExerciseStats}
 								{#each allExerciseStats.filter((stat) => {
 									return stat.exerciseID === currentExerciseID;
 								}) as workoutStat}
-									<div class="workoutStat">
+									<div class="stat">
 										<div class="numbers">
-											{workoutStat.sets}x{workoutStat.reps}
+											{workoutStat.sets} x {workoutStat.reps}
+										</div>
+										<div class="weight">
+											{#if workoutStat.weight}
+												{workoutStat.weight[0]}
+											{/if}
 										</div>
 										<div class="date">
-											{workoutStat.date}
+											{getPrettyPrintDate(new Date(workoutStat.date))}
 										</div>
 									</div>
 								{/each}
+								{#if allExerciseStats.filter((stat) => {
+									return stat.exerciseID === currentExerciseID;
+								}).length === 0}
+									<div class="stat">Hmm... Looks like you haven't done this one yet</div>
+								{/if}
+								<div class="stat">
+									<button class="add" on:click={() => (showModal = true)}>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											height="24px"
+											viewBox="0 -960 960 960"
+											width="24px"
+											fill="#5f6368"
+											><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+										>
+										<div class="text">Add</div>
+									</button>
+								</div>
 							{:else}
 								<LoadingGraphic />
 							{/if}
@@ -182,6 +242,29 @@
 		</div>
 	{/if}
 {/if}
+
+<Modal bind:showModal>
+	<div class="modalContent">
+		<input class="weight" bind:value={weightToAdd} />
+		<input class="weight" bind:value={setsToAdd} />
+		<input class="weight" bind:value={repsToAdd} />
+		<div class="buttons">
+			<button
+				class="confirm"
+				on:click={async () => {
+					await addExerciseStat();
+					showModal = false;
+				}}>Add</button
+			>
+			<button
+				class="deny"
+				on:click={() => {
+					showModal = false;
+				}}>Cancel</button
+			>
+		</div>
+	</div>
+</Modal>
 
 <style lang="scss">
 	.cardContainer {
@@ -273,10 +356,21 @@
 				padding-right: 30px;
 				padding-top: 20px;
 				padding-bottom: 20px;
-				.title {
-					font-size: 2em;
-					padding-left: 5%;
-					padding-bottom: 12px;
+				.top {
+					width: 100%;
+					display: flex;
+					flex-direction: row;
+					.title {
+						width: 80%;
+						font-size: 2em;
+						padding-left: 5%;
+						padding-bottom: 12px;
+					}
+					.bodyGroup {
+						height: fit-content;
+						padding: 6px;
+						border-radius: 6px;
+					}
 				}
 			}
 			.stats {
@@ -286,6 +380,66 @@
 				padding-bottom: 20px;
 				.title {
 					font-size: 1.4em;
+				}
+				.statsContainer {
+					width: 80%;
+					display: flex;
+					padding-top: 6px;
+					flex-direction: column;
+					.stat {
+						width: 100%;
+						display: flex;
+						flex-direction: row;
+						padding: 12px;
+						gap: 30px;
+						border-top: 1px solid white;
+						&:nth-child(even) {
+							background-color: #ffffff13;
+						}
+						&:last-child {
+							border-bottom: 1px solid white;
+						}
+						.numbers {
+							width: 40%;
+						}
+						.weight {
+							width: 20%;
+						}
+						.date {
+							width: 20%;
+							color: rgb(168, 168, 168);
+							font-size: 0.9em;
+						}
+						.add {
+							padding: 12px;
+							background-color: #d4d4d4;
+							border: none;
+							border-radius: 10px;
+							color: rgb(122, 122, 122);
+							font-family: sans-serif;
+							display: flex;
+							flex-direction: row;
+							justify-content: center;
+							align-items: center;
+							cursor: pointer;
+							&:hover {
+								transition: 400ms;
+								background-color: #949494;
+								color: white;
+								svg {
+									fill: #f6f7ff;
+									animation-name: wiggle;
+									animation-duration: 0.5s;
+									animation-iteration-count: 1;
+								}
+							}
+							svg {
+								height: 1.2em;
+								width: auto;
+								fill: rgb(104, 104, 104);
+							}
+						}
+					}
 				}
 			}
 		}
@@ -392,29 +546,70 @@
 						font-size: 1.2em;
 					}
 					.bodyGroup {
-						// width: 20%;
+						width: 5em;
 						padding: 3px;
 						border-radius: 6px;
 						color: white;
-						&.back {
-							background-color: #5a7fa7; /* Washed-out deeper blue */
-						}
-						&.chest {
-							background-color: #b48c5e; /* Muted amber-brown */
-						}
-						&.legs {
-							background-color: #89a97d; /* Soft olive green */
-						}
-						&.arms {
-							background-color: #8b6caa; /* Washed-out muted purple */
-						}
-						&.shoulders {
-							background-color: #b96868; /* Muted brick red */
-						}
 					}
 				}
 			}
 		}
+	}
+	.buttons {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		gap: 20px;
+
+		margin-top: 15px;
+		button {
+			color: white;
+			border: none;
+			font-size: 1.2em;
+			padding: 7px;
+			border-radius: 5px;
+			width: 4em;
+			cursor: pointer;
+		}
+		.confirm {
+			background-color: rgb(136, 177, 224);
+			&:hover {
+				background-color: rgb(182, 204, 231);
+			}
+		}
+		.deny {
+			background-color: gray;
+			&:hover {
+				background-color: rgb(182, 182, 182);
+			}
+		}
+	}
+	.modalContent {
+		padding: 20px;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+		width: 40vw;
+		height: 50vh;
+		overflow: hidden;
+	}
+
+	.back {
+		background-color: #5a7fa7; /* Washed-out deeper blue */
+	}
+	.chest {
+		background-color: #b48c5e; /* Muted amber-brown */
+	}
+	.legs {
+		background-color: #89a97d; /* Soft olive green */
+	}
+	.arms {
+		background-color: #8b6caa; /* Washed-out muted purple */
+	}
+	.shoulders {
+		background-color: #b96868; /* Muted brick red */
 	}
 	.unselectable {
 		-webkit-touch-callout: none;
@@ -423,5 +618,23 @@
 		-moz-user-select: none;
 		-ms-user-select: none;
 		user-select: none;
+	}
+
+	@keyframes wiggle {
+		0% {
+			transform: rotate(0);
+		}
+		25% {
+			transform: rotate(-30deg);
+		}
+		50% {
+			transform: rotate(30deg);
+		}
+		75% {
+			transform: rotate(0);
+		}
+		100% {
+			transform: rotate(0);
+		}
 	}
 </style>

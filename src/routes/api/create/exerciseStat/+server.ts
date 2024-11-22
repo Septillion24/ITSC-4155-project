@@ -1,13 +1,17 @@
 import ExerciseStatRepo from '../../../../classes/ExerciseStatRepo.js';
-export async function POST({ request }): Promise<Response> {
+import { SessionManager } from '../../../../classes/SessionManager.js';
+export async function POST({ cookies, request }): Promise<Response> {
 	const requestJSON = await request.json();
-	if (requestJSON.name === undefined) {
-		return new Response('Bad Request', { status: 400 });
-	}
+
+	const token = cookies.get('token');
+	if (!token) return new Response('Unauthorized', { status: 401 });
+	const user = await SessionManager.getUserFromUUID(token);
+	if (!user) return new Response('Unauthorized', { status: 401 });
+
 	const excerciseStatInfo = {
 		exerciseID: requestJSON.exerciseID,
-		userID: requestJSON.userID,
-		date: requestJSON.date,
+		userID: user.id,
+		date: Date.now(),
 		sets: requestJSON.sets,
 		reps: requestJSON.reps,
 		weight: requestJSON.weight
