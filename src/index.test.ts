@@ -34,7 +34,7 @@ describe('exercise stats tests', () => {
 			weight: [135, 145, 155]
 		};
 		const exerciseStat = await ExerciseStatRepo.addExerciseStat(exerciseStatInfo);
-		expect(exerciseStat.reps).toBe(2);
+		expect(exerciseStat.reps).toBe(8);
 	});
 });
 

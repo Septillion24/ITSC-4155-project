@@ -77,11 +77,12 @@ export class SessionManager {
 		// const firstName = await this.getNameFromGoogleCode(googleCode);
 		if (userRow.length === 0) {
 			await sql`insert into users (user_id) values (${id})`;
+			const workouts = await PredefinedWorkoutRepo.getWorkouts();
+			for (const workout of workouts) {
+				await UserWorkoutRepo.addWorkout(workout.name, workout.exerciseList, id);
+			}
 		}
-		const workouts = await PredefinedWorkoutRepo.getWorkouts();
-		for (const workout of workouts) {
-			await UserWorkoutRepo.addWorkout(workout.name, workout.exerciseList, id);
-		}
+
 		return session;
 	}
 
