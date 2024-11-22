@@ -77,4 +77,23 @@ export default class PredefinedWorkoutRepo {
 	static async addExerciseToWorkout(workoutID: number, exerciseID: number) {
 		await sql`UPDATE user_workouts SET exercise_list = array_append(exercise_list, ${exerciseID}) WHERE id=${workoutID}`;
 	}
+
+	static async getWorkouts(): Promise<PredefinedWorkout[]> {
+		type WorkoutFromDatabase = {
+			id: number;
+			name: string;
+			exercise_list: number[];
+		};
+		const workoutsFromDatabase = await sql<
+			WorkoutFromDatabase[]
+		>`SELECT * FROM predefined_workouts`;
+		if (workoutsFromDatabase.length === 0) {
+			return [];
+		}
+		return workoutsFromDatabase.map((workout) => ({
+			id: workout.id,
+			name: workout.name,
+			exerciseList: workout.exercise_list as number[]
+		}));
+	}
 }

@@ -1,5 +1,6 @@
 import sql from '$lib/DatabaseConnection';
 import { User } from './User';
+
 export default class UserRepo {
 	static async getUserByID(userID: string): Promise<User> {
 		type UserRow = {
@@ -34,6 +35,7 @@ export default class UserRepo {
 			INSERT INTO users (username, email, first_name, last_name) VALUES (${username}, ${email}, ${first_name}, ${last_name}) returning user_id
 		`;
 		const userID = row[0].user_id;
+
 		return new User(userID, username, email, first_name, last_name);
 	}
 

@@ -3,6 +3,7 @@ import ExerciseRepo from './classes/ExcerciseRepo';
 import ExerciseStatRepo from './classes/ExerciseStatRepo';
 import { DateTime } from '@auth/core/providers/kakao';
 import UserWorkoutRepo from './classes/UserWorkoutRepo';
+import PredefinedWorkoutRepo from './classes/PredefinedWorkoutRepo';
 describe('sum test', () => {
 	it('adds 1 + 2 to equal 3', () => {
 		expect(1 + 2).toBe(3);
@@ -10,6 +11,7 @@ describe('sum test', () => {
 });
 
 describe('exercise tests', () => {
+	//finished
 	it('gets excercise by id', async () => {
 		const exercise = await ExerciseRepo.getExerciseByid(13);
 		expect(exercise?.name).toBe('Lat Pulldown');
@@ -42,12 +44,12 @@ describe('exercise stats tests', () => {
 
 describe('user workouts', () => {
 	it('gets user workout by id', async () => {
-		const exercise = await UserWorkoutRepo.getUserWorkoutById(15);
+		const exercise = await UserWorkoutRepo.getUserWorkoutById(3);
 		console.log(exercise);
-		expect(exercise?.id).toBe(15);
-		expect(exercise?.name).toBe('jawn');
+		expect(exercise?.id).toBe(3);
+		expect(exercise?.name).toBe('jorn');
 		expect(exercise?.exerciseList).toEqual([]);
-		expect(exercise?.userID).toBe('102076183365937191708');
+		expect(exercise?.userID).toBe('15');
 	});
 	it('updates', async () => {
 		const workout = await UserWorkoutRepo.updateWorkout(3, {
@@ -94,10 +96,32 @@ describe('user workouts', () => {
 		expect(workout).toBe(null);
 	});
 	it('updates', async () => {
-		const workout = await UserWorkoutRepo.updateWorkout(undefined, {
-			name: undefined
+		let workout = await UserWorkoutRepo.updateWorkout(3, {
+			exerciseList: [1, 2, 3]
 		});
-		expect(workout).toBe(null);
+		workout = await UserWorkoutRepo.updateWorkout(3, {
+			exerciseList: []
+		});
+		expect(workout?.exerciseList).toEqual([]);
+	});
+	//let addedID: number;
+	// it('adds', async () => {
+	// 	const workout = await UserWorkoutRepo.addWorkout('jawn', [1, 2, 3], '14');
+	// 	expect(workout.name).toBe('jawn');
+	// 	expect(workout.exerciseList).toEqual([1, 2, 3]);
+	// 	expect(workout.userID).toBe('14');
+	// 	workout.id = addedID;
+	// });
+	// it('deletes', async () => {
+	// 	const workout = await UserWorkoutRepo.deleteWorkout(addedID);
+	// 	expect(workout).toBe(true);
+	// });
+});
+describe('predefined workouts', () => {
+	it('gets all', async () => {
+		const workouts = await PredefinedWorkoutRepo.getWorkouts();
+		console.log(workouts);
+		expect(workouts.length).toBe(9);
 	});
 });
 

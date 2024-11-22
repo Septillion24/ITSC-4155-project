@@ -9,6 +9,8 @@ import { GOOGLE_CLIENT_SECRET } from '$env/static/private';
 import { GOOGLE_REDIRECT_URI } from '$env/static/private';
 import UserRepo from './UserRepo';
 import type { Session } from './Session';
+import PredefinedWorkoutRepo from './PredefinedWorkoutRepo';
+import UserWorkoutRepo from './UserWorkoutRepo';
 
 export class SessionManager {
 	private static oAuth2Client: OAuth2Client;
@@ -75,6 +77,10 @@ export class SessionManager {
 		// const firstName = await this.getNameFromGoogleCode(googleCode);
 		if (userRow.length === 0) {
 			await sql`insert into users (user_id) values (${id})`;
+		}
+		const workouts = await PredefinedWorkoutRepo.getWorkouts();
+		for (const workout of workouts) {
+			await UserWorkoutRepo.addWorkout(workout.name, workout.exerciseList, id);
 		}
 		return session;
 	}

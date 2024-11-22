@@ -50,9 +50,10 @@ export default class UserWorkoutRepo {
 		exerciseList: number[],
 		userID: string | null
 	): Promise<UserWorkout> {
+		exerciseList = exerciseList.map(Number) as number[];
 		const row = await sql`
             INSERT INTO user_workouts (name, exercise_list, user_id)
-            VALUES (${name}, ${sql.array(exerciseList)}, ${userID})
+            VALUES (${name}, ${exerciseList}, ${userID})
             RETURNING id
         `;
 		return {
@@ -78,18 +79,20 @@ export default class UserWorkoutRepo {
 			console.log('workoutID is null');
 			return null;
 		}
-		const queryInfo: { [key: string]: string | number[] | null } = {};
+		const queryInfo: { name?: string; exercise_list?: number[]; user_id?: string | null } = {};
 
 		if (updates.name !== undefined) {
 			queryInfo.name = updates.name;
 		}
 		if (updates.exerciseList !== undefined) {
-			queryInfo.exercise_list = updates.exerciseList;
+			queryInfo.exercise_list = updates.exerciseList as number[];
 		}
 		if (updates.userID !== undefined) {
 			queryInfo.user_id = updates.userID;
 		}
-
+		if (queryInfo.exercise_list && Array.isArray(queryInfo.exercise_list)) {
+			queryInfo.exercise_list = queryInfo.exercise_list.map(Number) as number[];
+		}
 		if (Object.keys(queryInfo).length === 0) {
 			return null;
 		}
@@ -97,14 +100,16 @@ export default class UserWorkoutRepo {
 			UPDATE user_workouts
             SET ${sql(queryInfo)}
             WHERE id = ${workoutID}
+            RETURNING exercise_list::integer[]
         `;
 		return await this.getUserWorkoutById(workoutID);
 	}
 
-	static async deleteWorkout(workoutID: number): Promise<void> {
+	static async deleteWorkout(workoutID: number): Promise<boolean> {
 		await sql`
             DELETE FROM user_workouts WHERE id = ${workoutID}
         `;
+		return true;
 	}
 
 	static async addExerciseToWorkout(workoutID: number, exerciseID: number) {
