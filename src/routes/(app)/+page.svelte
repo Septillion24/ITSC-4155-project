@@ -35,6 +35,8 @@
 	let currentFilterText: string = '';
 	let currentlySelectedExerciseIds: number[] = [];
 
+	let allExcerciseDays: [{ stats: WorkoutStat[]; isToday: boolean; isPassed: boolean }];
+
 	let cookies: {
 		[key: string]: string;
 	};
@@ -45,8 +47,6 @@
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
 		allExerciseStats = await (await fetch('/api/get/exerciseStats')).json();
 		allWorkoutStats = await (await fetch('/api/get/workoutStatsByUserID')).json();
-		console.log('workoutstat');
-		console.log(allWorkoutStats);
 	});
 
 	async function submitNewWorkout() {
@@ -100,21 +100,21 @@
 	}
 
 	function getAllExerciseDays(
-		exerciseStats: ExerciseStat[]
-	): [{ stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }] {
+		workoutStats: WorkoutStat[]
+	): [{ stats: WorkoutStat[]; isToday: boolean; isPassed: boolean }] {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 
 		const sunday = new Date(today);
 		sunday.setDate(sunday.getDate() - sunday.getDay());
 
-		const weekData: { stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }[] = [];
+		const weekData: { stats: WorkoutStat[]; isToday: boolean; isPassed: boolean }[] = [];
 
 		for (let i = 0; i < 7; i++) {
 			const currentDay = new Date(sunday);
 			currentDay.setDate(sunday.getDate() + i);
 
-			const statsForTheDay = exerciseStats.filter((stat) => {
+			const statsForTheDay = workoutStats.filter((stat) => {
 				const statDate = new Date(stat.date);
 				statDate.setHours(0, 0, 0, 0);
 				return statDate.getTime() === currentDay.getTime();
@@ -127,7 +127,47 @@
 			});
 		}
 
-		return weekData as [{ stats: ExerciseStat[]; isToday: boolean; isPassed: boolean }];
+		return weekData as [{ stats: WorkoutStat[]; isToday: boolean; isPassed: boolean }];
+	}
+
+	async function addWorkoutStat() {
+		const response = await fetch('/api/create/workoutStat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				workoutID: selectedWorkoutID,
+				date: getNoonDate(currentlyEditingDay!)
+			})
+		});
+		const newWorkoutStat = (await response.json()) as WorkoutStat;
+		newWorkoutStat.date = new Date(newWorkoutStat.date);
+		newWorkoutStat.date.setDate(newWorkoutStat.date.getDate() - 1);
+		allWorkoutStats = [...allWorkoutStats, newWorkoutStat];
+	}
+
+	function getNoonDate(dayOfWeek: number) {
+		if (dayOfWeek < 0 || dayOfWeek > 7) {
+			throw new Error('Input must be between 0 and 7, where 0 is Sunday and 7 is Saturday.');
+		}
+
+		if (dayOfWeek === 7) {
+			dayOfWeek = 0;
+		} else {
+			dayOfWeek += 1; //lol
+		}
+
+		const now = new Date();
+		const currentDay = now.getDay();
+		const currentWeekStart = new Date(now.setDate(now.getDate() - currentDay));
+		const targetDate = new Date(currentWeekStart);
+
+		// Set target day and time to noon
+		targetDate.setDate(currentWeekStart.getDate() + dayOfWeek);
+		targetDate.setHours(12, 0, 0, 0);
+
+		return targetDate;
 	}
 
 	function getDayNameFromNumber(number: number) {
@@ -217,8 +257,6 @@
 		}
 	}
 
-	async function addNewExerciseStat() {}
-
 	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
 		const response = await fetch('/api/delete/exerciseFromWorkout', {
 			method: 'POST',
@@ -245,6 +283,19 @@
 		return workouts.filter((w) => w.id === id)[0];
 	}
 
+	async function removeWorkoutStat(workoutStatID: number) {
+		const response = fetch('/api/delete/workoutStat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				workoutStatID: workoutStatID
+			})
+		});
+		allWorkoutStats = allWorkoutStats.filter((w) => w.id !== workoutStatID);
+	}
+
 	$: if (currentlyFilteredMuscleGroup) {
 		currentlyFilteredExerciseIDs = getCurrentlyFilteredExerciseIDsByMuscleGroupID(
 			currentlyFilteredMuscleGroup
@@ -260,10 +311,14 @@
 	$: if (!currentlyFilteredMuscleGroup) currentlyFilteredExerciseIDs = [];
 
 	$: console.log(currentlyFilteredExerciseIDs);
+
+	$: if (allWorkoutStats) {
+		allExcerciseDays = getAllExerciseDays(allWorkoutStats);
+	}
 </script>
 
 {#if cookies && getCookie('token')}
-	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0 && allExerciseStats !== undefined}
+	{#if exercises.length > 0 && workouts.length > 0 && muscleGroups.length > 0}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="container cardContainer" on:mousemove={onMouseMoveContainer}>
 			<div class="card muscleGroups">
@@ -443,7 +498,7 @@
 				<div class="cardContent">
 					<div class="header">WORKOUT SCHEDULE</div>
 					<div class="schedule">
-						{#each getAllExerciseDays(allExerciseStats) as day, i}
+						{#each allExcerciseDays as day, i (day.stats)}
 							<div class="day {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
 								<div class="dayName unselectable">
 									{getDayNameFromNumber(i)}
@@ -452,11 +507,20 @@
 									{#each day.stats as stat}
 										<div class="stat {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
 											<div class="name">
-												{exercises.find((e) => e.id === stat.exerciseID)?.name}
+												{workouts.find((e) => e.id == stat.workoutID)?.name}
 											</div>
-											<div class="sets">
-												{stat.sets}x{stat.reps}
-											</div>
+											<button class="delete" on:click={() => removeWorkoutStat(stat.id)}>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													height="24px"
+													viewBox="0 -960 960 960"
+													width="24px"
+													fill="#5f6368"
+													><path
+														d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"
+													/></svg
+												>
+											</button>
 										</div>
 									{/each}
 									<button
@@ -632,7 +696,7 @@
 					<button
 						class="confirm"
 						on:click={async () => {
-							await addNewExerciseStat();
+							await addWorkoutStat();
 							selectedWorkoutID = undefined;
 							currentFilterText = '';
 							showAddNewStatModal = false;
@@ -1102,6 +1166,34 @@
 								gap: 3px;
 								max-width: 75%;
 								border: none;
+
+								position: relative;
+								&:hover {
+									.delete {
+										transition: 300ms;
+										// visibility: visible;
+										// background-color: red;
+										background-color: rgba(189, 85, 85, 0.603);
+										svg {
+											fill: rgba(255, 255, 255, 1);
+										}
+									}
+								}
+								.delete {
+									position: absolute;
+									// visibility: hidden;
+									background-color: rgba(255, 0, 0, 0);
+									border: none;
+									cursor: pointer;
+									width: 100%;
+									height: 100%;
+									border-radius: 10px;
+									svg {
+										height: 2em;
+										width: auto;
+										fill: rgba(255, 255, 255, 0);
+									}
+								}
 								&.today {
 									background-color: #8b87c5;
 								}
@@ -1110,9 +1202,6 @@
 									background-color: #363636;
 									.name {
 										color: gray;
-									}
-									.sets {
-										color: rgb(122, 122, 122);
 									}
 								}
 								.name {
