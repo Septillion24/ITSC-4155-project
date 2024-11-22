@@ -3,6 +3,7 @@ import ExerciseRepo from './classes/ExcerciseRepo';
 import ExerciseStatRepo from './classes/ExerciseStatRepo';
 import UserWorkoutRepo from './classes/UserWorkoutRepo';
 import PredefinedWorkoutRepo from './classes/PredefinedWorkoutRepo';
+import WorkoutStatRepo from './classes/WorkoutStatRepo';
 describe('sum test', () => {
 	it('adds 1 + 2 to equal 3', () => {
 		expect(1 + 2).toBe(3);
@@ -105,6 +106,58 @@ describe('predefined workouts', () => {
 		const workouts = await PredefinedWorkoutRepo.getWorkouts();
 		console.log(workouts);
 		expect(workouts.length).toBe(9);
+	});
+});
+
+describe('workout stats', () => {
+	it('adds', async () => {
+		const workoutStat = await WorkoutStatRepo.addWorkoutStat(1, '15', new Date());
+		expect(workoutStat.workoutID).toBe(1);
+		expect(workoutStat.userID).toBe('15');
+	});
+	it('gets', async () => {
+		const workoutStat = await WorkoutStatRepo.getWorkoutStatById(1);
+		expect(workoutStat?.id).toBe(1);
+		expect(workoutStat?.workoutID).toBe(2);
+		expect(workoutStat?.userID).toBe('15');
+	});
+	it('updates', async () => {
+		const workoutStat = await WorkoutStatRepo.updateWorkoutStat(1, {
+			workoutID: 2,
+			userID: '14',
+			date: new Date()
+		});
+		expect(workoutStat?.id).toBe(1);
+		expect(workoutStat?.workoutID).toBe(2);
+		expect(workoutStat?.userID).toBe('14');
+	});
+	it('updates', async () => {
+		const workoutStat = await WorkoutStatRepo.updateWorkoutStat(1, {
+			workoutID: 2
+		});
+		expect(workoutStat?.id).toBe(1);
+		expect(workoutStat?.workoutID).toBe(2);
+		expect(workoutStat?.userID).toBe('14');
+	});
+	it('updates', async () => {
+		const workoutStat = await WorkoutStatRepo.updateWorkoutStat(1, {
+			userID: '15'
+		});
+		expect(workoutStat?.id).toBe(1);
+		expect(workoutStat?.workoutID).toBe(2);
+		expect(workoutStat?.userID).toBe('15');
+	});
+	it('updates', async () => {
+		const workoutStat = await WorkoutStatRepo.updateWorkoutStat(1, {
+			date: new Date()
+		});
+		expect(workoutStat?.id).toBe(1);
+		expect(workoutStat?.workoutID).toBe(2);
+		expect(workoutStat?.userID).toBe('15');
+	});
+	it('updates', async () => {
+		const workoutStat = await WorkoutStatRepo.updateWorkoutStat(1, {});
+		expect(workoutStat).toBe(null);
 	});
 });
 
