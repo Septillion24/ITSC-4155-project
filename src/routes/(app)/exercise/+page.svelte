@@ -50,6 +50,8 @@
 				weight: weightToAdd
 			})
 		});
+
+		allExerciseStats = [...allExerciseStats, (await response.json()) as ExerciseStat];
 	}
 
 	$: hash = $page.url.hash.substring(1);
@@ -245,9 +247,15 @@
 
 <Modal bind:showModal>
 	<div class="modalContent">
-		<input class="weight" bind:value={weightToAdd} />
-		<input class="weight" bind:value={setsToAdd} />
-		<input class="weight" bind:value={repsToAdd} />
+		<div class="title">Add new workout stat</div>
+		<div class="weight">
+			<input type="number" class="weight" bind:value={weightToAdd} placeholder="Weight" />
+		</div>
+		<div class="sets">
+			<input type="number" class="sets" bind:value={setsToAdd} placeholder="Sets" />
+			<div>x</div>
+			<input type="number" class="reps" bind:value={repsToAdd} placeholder="Reps" />
+		</div>
 		<div class="buttons">
 			<button
 				class="confirm"
@@ -591,9 +599,55 @@
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
-		width: 40vw;
-		height: 50vh;
+		width: 30vw;
+		height: 30vh;
 		overflow: hidden;
+		.title {
+			width: 100%;
+			text-align: center;
+			color: white;
+			font-size: 1.4em;
+			padding-top: 20px;
+			padding-top: 20px;
+		}
+		.weight {
+		}
+		.sets {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			div {
+				font-size: 1.2em;
+				font-family: sans-serif;
+			}
+			input {
+				width: 45%;
+			}
+		}
+		input {
+			background-color: transparent;
+			padding: 5px;
+			font-size: 1.3em;
+			color: white;
+			border: none;
+			border-bottom: 2px solid gray;
+			&::placeholder {
+				color: rgb(179, 179, 179);
+				font-style: italic;
+				font-size: 0.9em;
+			}
+			&:focus {
+				outline: none;
+				background: rgb(2, 0, 36);
+				background: linear-gradient(
+					0deg,
+					rgb(0, 0, 0) 0%,
+					rgba(0, 0, 0, 0.25) 0%,
+					rgba(0, 0, 0, 0) 100%
+				);
+			}
+		}
 	}
 
 	.back {
