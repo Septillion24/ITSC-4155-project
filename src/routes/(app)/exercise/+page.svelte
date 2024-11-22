@@ -145,22 +145,22 @@
 					>
 					/ {allExercises.length}
 				</div>
+				<div class="filter">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#5f6368"
+					>
+						<path
+							d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"
+						/>
+					</svg>
+					<input placeholder="Type to filter..." bind:value={currentFilterText} />
+				</div>
 			</div>
 
-			<div class="filter">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					height="24px"
-					viewBox="0 -960 960 960"
-					width="24px"
-					fill="#5f6368"
-				>
-					<path
-						d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"
-					/>
-				</svg>
-				<input placeholder="Type to filter..." bind:value={currentFilterText} />
-			</div>
 			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<div class="exercises cardContainer" on:mousemove={onMouseMoveContainer}>
 				{#each allExercises
@@ -301,9 +301,13 @@
 			padding-top: 24px;
 			font-family: sans-serif;
 			padding-bottom: 12px;
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 			.title {
 				font-size: 1.6em;
-				padding-left: 5%;
 			}
 			.count {
 				font-size: 1.3em;
@@ -312,41 +316,43 @@
 					color: rgb(201, 201, 201);
 				}
 			}
-		}
-		.filter {
-			position: relative;
-			display: flex;
-			align-items: center;
-			margin-left: 1em;
-			svg {
-				position: absolute;
-				left: 0;
-				width: 2em;
-				height: auto;
-				padding: 0.1em;
-				box-sizing: border-box;
-				fill: rgb(255, 255, 255);
-			}
-			input {
-				padding-left: 1.5em !important;
-				width: 30%;
-				padding: 6px;
-				font-size: 1.3em;
-				color: white;
-				background-color: rgb(211, 222, 255);
-				border: none;
-				&::placeholder {
-					color: rgb(105, 105, 105);
+			.filter {
+				position: relative;
+				display: flex;
+				align-items: center;
+				margin-left: 1em;
+				width: 40%;
+				svg {
+					position: absolute;
+					left: 0;
+					width: 2em;
+					height: auto;
+					padding: 0.1em;
+					box-sizing: border-box;
+					fill: rgb(255, 255, 255);
 				}
-				&:focus::placeholder {
+				input {
+					padding-left: 1.5em !important;
+					width: 100%;
+					padding: 6px;
+					font-size: 1.3em;
 					color: white;
-				}
-				&:focus {
-					outline: none;
-					background-color: #a8b1e6;
+					background-color: rgb(211, 222, 255);
+					border: none;
+					&::placeholder {
+						color: rgb(105, 105, 105);
+					}
+					&:focus::placeholder {
+						color: white;
+					}
+					&:focus {
+						outline: none;
+						background-color: #a8b1e6;
+					}
 				}
 			}
 		}
+
 		.exercises {
 			width: 100%;
 			padding-left: 10%;
