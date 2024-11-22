@@ -34,6 +34,9 @@ export default class ExerciseStatRepo {
 		reps: number | null;
 		weight: number[] | null;
 	}): Promise<ExerciseStat> {
+		console.log(typeof exerciseStatInfo.exerciseID); // Should be 'number'
+		console.log(typeof exerciseStatInfo.userID); // Should be 'string'
+
 		const row = await sql`
             INSERT INTO exercise_stats (
                 exercise_id, user_id, date, sets, reps, weight
@@ -46,6 +49,7 @@ export default class ExerciseStatRepo {
 				${exerciseStatInfo.weight}::integer[]
             ) RETURNING exercise_stat_id
         `;
+
 		return {
 			id: row[0].exercise_stat_id,
 			exerciseID: exerciseStatInfo.exerciseID,
