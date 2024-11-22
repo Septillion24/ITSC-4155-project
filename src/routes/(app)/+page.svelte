@@ -188,7 +188,7 @@
 	}
 
 	async function updateWorkout() {
-		const response = fetch('/api/update/workout', {
+		const response = await fetch('/api/update/workout', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -198,10 +198,18 @@
 				exerciseIDs: currentlySelectedExerciseIds
 			})
 		});
+		if (response.ok) {
+			const workout = workouts.find((w) => w.id === currentlyEditingWorkout);
+			if (workout) {
+				workout.exerciseList = [...currentlySelectedExerciseIds];
+			}
+		} else {
+			console.error('Failed to update workout:', response.statusText);
+		}
 	}
 
 	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
-		const response = fetch('/api/delete/exerciseFromWorkout', {
+		const response = await fetch('/api/delete/exerciseFromWorkout', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -211,6 +219,15 @@
 				exerciseID: exerciseID
 			})
 		});
+		if (response.ok) {
+			const workout = workouts.find((w) => w.id === workoutID);
+			if (workout) {
+				workout.exerciseList = workout.exerciseList.filter((id) => id !== exerciseID);
+			}
+			workouts = workouts;
+		} else {
+			console.error('Failed to remove exercise from workout:', response.statusText);
+		}
 	}
 
 	function getWorkoutFromId(id: number) {
@@ -288,16 +305,14 @@
 									e.stopPropagation();
 								}}
 							>
-								<div class="addText">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										height="24px"
-										viewBox="0 -960 960 960"
-										width="24px"
-										fill="#5f6368"
-										><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
-									>
-								</div>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									height="24px"
+									viewBox="0 -960 960 960"
+									width="24px"
+									fill="#5f6368"
+									><path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" /></svg
+								>
 							</button>
 
 							{#if showNewWorkoutPopout}
@@ -386,6 +401,7 @@
 										class="addExcercise"
 										on:click={() => {
 											currentlyEditingWorkout = workout.id;
+											currentlySelectedExerciseIds = workout.exerciseList;
 											showAddNewExerciseModal = true;
 										}}
 									>
@@ -698,6 +714,17 @@
 						}
 					}
 				}
+				&:hover {
+					.add-workout-button {
+						svg {
+							transition: 0.2s;
+							fill: #999;
+							animation-name: wiggle;
+							animation-duration: 0.5s;
+							animation-iteration-count: 1;
+						}
+					}
+				}
 			}
 
 			.empty {
@@ -749,7 +776,9 @@
 					flex-direction: row;
 					&.inactive {
 						background-color: #313131;
-						color: rgb(204, 204, 204);
+						.name {
+							color: rgb(146, 146, 146);
+						}
 					}
 					.delete {
 						cursor: pointer;
