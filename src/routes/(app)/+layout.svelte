@@ -26,9 +26,7 @@
 			</div>
 			<div class="profile">
 				{#if currentUser}
-					<div>
-						{currentUser.first_name}
-					</div>
+					<div></div>
 				{:else}
 					<a href="/login"> Login </a>
 				{/if}
