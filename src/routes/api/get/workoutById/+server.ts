@@ -1,5 +1,5 @@
 import WorkoutRepo from '../../../../classes/UserWorkoutRepo.js';
-import Workout from '../../../../classes/Workout.js';
+import type { UserWorkout } from '../../../../classes/UserWorkout.js';
 
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();
@@ -8,7 +8,7 @@ export async function POST({ request }): Promise<Response> {
 		return new Response('Bad Request', { status: 400 });
 	}
 
-	const workout: Workout | null = await WorkoutRepo.getUserWorkoutById(requestJSON.id);
+	const workout: UserWorkout | null = await WorkoutRepo.getUserWorkoutById(requestJSON.id);
 	if (workout === null) {
 		return new Response('Workout not found', { status: 404 });
 	}
