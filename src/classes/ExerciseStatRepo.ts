@@ -38,7 +38,12 @@ export default class ExerciseStatRepo {
             INSERT INTO exercise_stats (
                 exercise_id, user_id, date, sets, reps, weight
             ) VALUES (
-                ${exerciseStatInfo.exerciseID}, ${exerciseStatInfo.userID}, ${exerciseStatInfo.date}, ${exerciseStatInfo.sets}, ${exerciseStatInfo.reps}, ${exerciseStatInfo.weight}
+                ${exerciseStatInfo.exerciseID}::integer, 
+				${exerciseStatInfo.userID}::varchar(255), 
+				${exerciseStatInfo.date}::date, 
+				${exerciseStatInfo.sets}::integer, 
+				${exerciseStatInfo.reps}::integer, 
+				${exerciseStatInfo.weight}::integer[]
             ) RETURNING exercise_stat_id
         `;
 		return {
