@@ -51,6 +51,10 @@
 			})
 		});
 
+		setsToAdd = undefined;
+		repsToAdd = undefined;
+		weightToAdd = undefined;
+
 		allExerciseStats = [...allExerciseStats, (await response.json()) as ExerciseStat];
 	}
 
