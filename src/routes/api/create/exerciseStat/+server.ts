@@ -11,7 +11,7 @@ export async function POST({ cookies, request }): Promise<Response> {
 	const excerciseStatInfo = {
 		exerciseID: requestJSON.exerciseID,
 		userID: user.id,
-		date: Date.now(),
+		date: new Date(),
 		sets: requestJSON.sets,
 		reps: requestJSON.reps,
 		weight: requestJSON.weight
