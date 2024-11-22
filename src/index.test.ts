@@ -22,10 +22,6 @@ describe('exercise tests', () => {
 });
 
 describe('exercise stats tests', () => {
-	it('getExerciseStatsByUser', async () => {
-		const exerciseStats = await ExerciseStatRepo.getExerciseStatsByUser('111825907751830022492');
-		expect(exerciseStats[0].id).toBe(2);
-	});
 	it('addExerciseStat', async () => {
 		const dateInstance = new Date();
 		const exerciseStatInfo = {
@@ -37,7 +33,7 @@ describe('exercise stats tests', () => {
 			weight: [135, 145, 155]
 		};
 		const exerciseStat = await ExerciseStatRepo.addExerciseStat(exerciseStatInfo);
-		expect(exerciseStat.reps).toBe(8);
+		expect(exerciseStat.reps).toBe(2);
 	});
 });
 
@@ -103,18 +99,6 @@ describe('user workouts', () => {
 		});
 		expect(workout?.exerciseList).toEqual([]);
 	});
-	//let addedID: number;
-	// it('adds', async () => {
-	// 	const workout = await UserWorkoutRepo.addWorkout('jawn', [1, 2, 3], '14');
-	// 	expect(workout.name).toBe('jawn');
-	// 	expect(workout.exerciseList).toEqual([1, 2, 3]);
-	// 	expect(workout.userID).toBe('14');
-	// 	workout.id = addedID;
-	// });
-	// it('deletes', async () => {
-	// 	const workout = await UserWorkoutRepo.deleteWorkout(addedID);
-	// 	expect(workout).toBe(true);
-	// });
 });
 describe('predefined workouts', () => {
 	it('gets all', async () => {

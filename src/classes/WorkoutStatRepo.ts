@@ -5,9 +5,9 @@ export default class WorkoutStatRepo {
 	static async getWorkoutStatsByUser(userID: string): Promise<WorkoutStat[]> {
 		type WorkoutStatFromDatabase = {
 			id: number;
-			workoutID: number;
+			workout_id: number;
 			date: Date;
-			userID: string;
+			user_id: string;
 		};
 
 		const workoutStatFromDatabase = await sql<
@@ -19,18 +19,18 @@ export default class WorkoutStatRepo {
 
 		return workoutStatFromDatabase.map((workout) => ({
 			id: workout.id,
-			workoutID: workout.workoutID,
+			workoutID: workout.workout_id,
 			date: workout.date,
-			userID: workout.userID
+			userID: workout.user_id
 		}));
 	}
 
 	static async getWorkoutStatById(id: number): Promise<WorkoutStat | null> {
 		type WorkoutStatFromDatabase = {
 			id: number;
-			workoutID: number;
+			workout_id: number;
 			date: Date;
-			userID: string;
+			user_id: string;
 		};
 
 		const workoutStatFromDatabase = await sql<WorkoutStatFromDatabase[]>`
@@ -42,9 +42,9 @@ export default class WorkoutStatRepo {
 		const workout = workoutStatFromDatabase[0];
 		return {
 			id: workout.id,
-			workoutID: workout.workoutID,
+			workoutID: workout.workout_id,
 			date: workout.date,
-			userID: workout.userID
+			userID: workout.user_id
 		};
 	}
 
