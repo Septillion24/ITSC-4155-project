@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import ExerciseRepo from './classes/ExcerciseRepo';
 import ExerciseStatRepo from './classes/ExerciseStatRepo';
-import { DateTime } from '@auth/core/providers/kakao';
 import UserWorkoutRepo from './classes/UserWorkoutRepo';
 import PredefinedWorkoutRepo from './classes/PredefinedWorkoutRepo';
 describe('sum test', () => {

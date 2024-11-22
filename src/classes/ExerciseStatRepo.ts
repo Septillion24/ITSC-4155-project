@@ -72,7 +72,47 @@ export default class ExerciseStatRepo {
 		) {
 			return;
 		}
-		await sql`UPDATE exercise_stats SET ${sql(updates)} WHERE exercise_stat_id=${exerciseStatID}`;
+		const queryInfo: {
+			exercise_id?: number;
+			user_id?: string;
+			date?: Date;
+			sets?: number | null;
+			reps?: number | null;
+			weight?: number[] | null;
+		} = {};
+		if (updates.exerciseID !== undefined) {
+			queryInfo.exercise_id = updates.exerciseID;
+		}
+		if (updates.userID !== undefined) {
+			queryInfo.user_id = updates.userID;
+		}
+		if (updates.date !== undefined) {
+			queryInfo.date = updates.date;
+		}
+		if (updates.sets !== undefined) {
+			queryInfo.sets = updates.sets;
+		}
+		if (updates.reps !== undefined) {
+			queryInfo.reps = updates.reps;
+		}
+		if (updates.weight !== undefined) {
+			queryInfo.weight = updates.weight;
+		}
+		await sql`UPDATE exercise_stats SET ${sql(queryInfo)} WHERE exercise_stat_id=${exerciseStatID}`;
+		// const queryInfo: { name?: string; exercise_list?: number[]; user_id?: string | null } = {};
+
+		// if (updates.name !== undefined) {
+		// 	queryInfo.name = updates.name;
+		// }
+		// if (updates.exerciseList !== undefined) {
+		// 	queryInfo.exercise_list = updates.exerciseList as number[];
+		// }
+		// if (updates.userID !== undefined) {
+		// 	queryInfo.user_id = updates.userID;
+		// }
+		// if (Object.keys(queryInfo).length === 0) {
+		// 	return null;
+		// }
 		return await this.getExerciseStatById(exerciseStatID);
 	}
 

@@ -1,4 +1,4 @@
-import ExerciseStatRepo from '../../../../classes/ExcerciseRepo.js';
+import ExerciseStatRepo from '../../../../classes/ExerciseStatRepo.js';
 
 export async function POST({ request }): Promise<Response> {
 	const requestJSON = await request.json();

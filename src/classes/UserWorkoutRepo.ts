@@ -71,14 +71,17 @@ export default class UserWorkoutRepo {
 		if (!updates.name && !updates.exerciseList && !updates.userID) {
 			return null;
 		}
+
 		if (workoutID === undefined) {
 			console.log('workoutID is undefined');
 			return null;
 		}
+
 		if (workoutID === null) {
 			console.log('workoutID is null');
 			return null;
 		}
+
 		const queryInfo: { name?: string; exercise_list?: number[]; user_id?: string | null } = {};
 
 		if (updates.name !== undefined) {
@@ -89,9 +92,6 @@ export default class UserWorkoutRepo {
 		}
 		if (updates.userID !== undefined) {
 			queryInfo.user_id = updates.userID;
-		}
-		if (queryInfo.exercise_list && Array.isArray(queryInfo.exercise_list)) {
-			queryInfo.exercise_list = queryInfo.exercise_list.map(Number) as number[];
 		}
 		if (Object.keys(queryInfo).length === 0) {
 			return null;
