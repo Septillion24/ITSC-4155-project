@@ -44,10 +44,10 @@
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				exerciseID: currentExerciseID,
-				sets: setsToAdd,
-				reps: repsToAdd,
-				weight: weightToAdd
+				exerciseID: currentExerciseID as number,
+				sets: setsToAdd as number,
+				reps: repsToAdd as number,
+				weight: [weightToAdd]
 			})
 		});
 
