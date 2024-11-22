@@ -9,15 +9,21 @@
 	import type { ExerciseStat } from '../../classes/ExerciseStat';
 	// @ts-ignore
 	import clickOutside from 'svelte-outside-click';
+	import type { WorkoutStat } from '../../classes/WorkoutStat';
 
 	let showAddNewExerciseModal = false;
 	let currentlyEditingWorkout: number | undefined = undefined;
 	let showNewWorkoutPopout: boolean = false;
+	let showAddNewStatModal: boolean = false;
+
+	let currentlyEditingDay: number | undefined = undefined;
+	let selectedWorkoutID: number | undefined = undefined;
 
 	let workouts: UserWorkout[] = [];
 	let exercises: Exercise[] = [];
 	let muscleGroups: MuscleGroup[] = [];
 	let allExerciseStats: ExerciseStat[] = [];
+	let allWorkoutStats: WorkoutStat[] = [];
 
 	let currentlyFilteredWorkoutIDs: number[] = [];
 	let currentlyFilteredExerciseIDs: number[] = [];
@@ -38,6 +44,9 @@
 		workouts = await (await fetch('/api/get/workouts')).json();
 		muscleGroups = await (await fetch('/api/get/muscleGroups')).json();
 		allExerciseStats = await (await fetch('/api/get/exerciseStats')).json();
+		allWorkoutStats = await (await fetch('/api/get/workoutStatsByUserID')).json();
+		console.log('workoutstat');
+		console.log(allWorkoutStats);
 	});
 
 	async function submitNewWorkout() {
@@ -207,6 +216,8 @@
 			console.error('Failed to update workout:', response.statusText);
 		}
 	}
+
+	async function addNewExerciseStat() {}
 
 	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
 		const response = await fetch('/api/delete/exerciseFromWorkout', {
@@ -438,7 +449,23 @@
 									{getDayNameFromNumber(i)}
 								</div>
 								<div class="stats">
-									<button class="add">
+									{#each day.stats as stat}
+										<div class="stat {day.isPassed ? 'past' : ''} {day.isToday ? 'today' : ''}">
+											<div class="name">
+												{exercises.find((e) => e.id === stat.exerciseID)?.name}
+											</div>
+											<div class="sets">
+												{stat.sets}x{stat.reps}
+											</div>
+										</div>
+									{/each}
+									<button
+										class="add"
+										on:click={() => {
+											showAddNewStatModal = true;
+											currentlyEditingDay = i;
+										}}
+									>
 										<div class="addText">
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -564,6 +591,70 @@
 	{/if}
 </Modal>
 
+<Modal bind:showModal={showAddNewStatModal}>
+	{#if currentlyEditingDay}
+		<div class="modalContent">
+			<div class="title">
+				Add new workout to <span>
+					{getDayNameFromNumber(currentlyEditingDay)}
+				</span>
+			</div>
+			<div class="exercises">
+				<div class="filter">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						height="24px"
+						viewBox="0 -960 960 960"
+						width="24px"
+						fill="#5f6368"
+					>
+						<path
+							d="M440-160q-17 0-28.5-11.5T400-200v-240L168-736q-15-20-4.5-42t36.5-22h560q26 0 36.5 22t-4.5 42L560-440v240q0 17-11.5 28.5T520-160h-80Zm40-308 198-252H282l198 252Zm0 0Z"
+						/>
+					</svg>
+					<input placeholder="Type to filter..." bind:value={currentFilterText} />
+				</div>
+				<div class="exerciseList full">
+					{#each workouts
+						.filter((w) => w.name.toLowerCase().includes(currentFilterText.toLowerCase()))
+						.sort((a, b) => a.name.localeCompare(b.name)) as workout (workout.id)}
+						<button
+							class="exercise {selectedWorkoutID !== workout.id ? 'active' : ''}"
+							on:click={() => {
+								selectedWorkoutID = workout.id;
+							}}
+						>
+							{workout.name}
+						</button>
+					{/each}
+				</div>
+				<div class="buttons">
+					<button
+						class="confirm"
+						on:click={async () => {
+							await addNewExerciseStat();
+							selectedWorkoutID = undefined;
+							currentFilterText = '';
+							showAddNewStatModal = false;
+						}}>Add</button
+					>
+					<button
+						class="deny"
+						on:click={() => {
+							selectedWorkoutID = undefined;
+							currentFilterText = '';
+							showAddNewStatModal = false;
+						}}>Cancel</button
+					>
+				</div>
+			</div>
+		</div>
+	{:else}
+		{@const _ = showAddNewStatModal = showAddNewStatModal}
+		<div>howd you get here?</div>
+	{/if}
+</Modal>
+
 <style lang="scss">
 	.cardContainer {
 		&:hover {
@@ -647,6 +738,8 @@
 			box-sizing: border-box;
 			width: calc(65% - 18px);
 			border-radius: 10px;
+			// max-height: 55vh;
+			// overflow: auto;
 			.header-container {
 				display: flex;
 				align-items: center;
@@ -995,6 +1088,42 @@
 							width: 100%;
 							align-items: center;
 							padding-top: 0.3em;
+							.stat {
+								border-radius: 10px;
+								background-color: transparent;
+								padding: 6px;
+								justify-content: center;
+								align-items: center;
+								width: fit-content;
+								background-color: rgb(139, 139, 139);
+								display: flex;
+								flex-direction: column;
+								align-items: center;
+								gap: 3px;
+								max-width: 75%;
+								border: none;
+								&.today {
+									background-color: #8b87c5;
+								}
+								&.past {
+									color: gray;
+									background-color: #363636;
+									.name {
+										color: gray;
+									}
+									.sets {
+										color: rgb(122, 122, 122);
+									}
+								}
+								.name {
+									// font-size: 12pt;
+									color: white;
+								}
+								.sets {
+									color: rgb(179, 179, 179);
+									font-size: 11pt;
+								}
+							}
 
 							.add {
 								visibility: hidden;
@@ -1120,7 +1249,7 @@
 					min-width: fit-content;
 					max-width: calc(50% - 10px);
 					padding: 5px;
-					background-color: #576096;
+					background-color: #43519b;
 					border-radius: 5px;
 					border: none;
 					color: white;
@@ -1128,6 +1257,9 @@
 					display: flex;
 					flex-direction: row;
 					align-items: center;
+					&.active {
+						background-color: #576096;
+					}
 					svg {
 						height: 1.3em;
 						width: auto;
