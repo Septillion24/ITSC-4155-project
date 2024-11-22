@@ -85,13 +85,13 @@
 	{@const currentExercise = allExercises.find((e) => {
 		return e.id === currentExerciseID;
 	})}
-	{#if currentExerciseID}
+	{#if currentExerciseID && currentExercise}
 		<!-- svelte-ignore a11y-no-static-element-interactions -->
 		<div class="content cardContainer" on:mousemove={onMouseMoveContainer}>
 			<div class="leftContent">
 				<div class="card">
 					<div class="flavor cardContent">
-						<div class="title unselectable">{currentExercise?.name}</div>
+						<div class="title unselectable">{currentExercise.name}</div>
 						<div class="description">{currentExercise?.description}</div>
 					</div>
 				</div>
@@ -366,7 +366,7 @@
 			flex-wrap: wrap;
 			justify-content: center;
 			overflow-y: auto;
-			max-height: 75vh;
+			max-height: 70vh;
 			position: relative;
 
 			.exercise {

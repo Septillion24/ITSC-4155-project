@@ -201,7 +201,7 @@
 	}
 
 	async function handleRemoveExerciseFromWorkout(workoutID: number, exerciseID: number) {
-		const response = fetch('/api/delete/exerciseFromWorkout', {
+		const response = await fetch('/api/delete/exerciseFromWorkout', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -211,6 +211,15 @@
 				exerciseID: exerciseID
 			})
 		});
+		if (response.ok) {
+			const workout = workouts.find((w) => w.id === workoutID);
+			if (workout) {
+				workout.exerciseList = workout.exerciseList.filter((id) => id !== exerciseID);
+			}
+			workouts = workouts;
+		} else {
+			console.error('Failed to remove exercise from workout:', response.statusText);
+		}
 	}
 
 	function getWorkoutFromId(id: number) {
